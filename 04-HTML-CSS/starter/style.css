@@ -1,0 +1,65 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* box-sizing border-box는 width값을 border까지 포함시켜서 계산. */
+}
+
+body {
+  background-color: rgb(226, 211, 182);
+  font-family: Arial;
+  /* font-family는 inherit하는 성격이 있어서 body의 모든 자식 element들에게 자동으로 적용됨. */
+  /* font 관련된 property들은 대부분 inherit 성격이 있음. */
+  font-size: 13px;
+  padding: 50px;
+}
+
+h1 {
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+h2 {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+p {
+  margin-bottom: 20px;
+}
+
+.first {
+  color: cornflowerblue;
+  background-color: #666;
+  border: 3px solid #333;
+  padding: 20px;
+}
+.second {
+  font-weight: bold;
+}
+#your-name {
+  background-color: rgb(240, 190, 128);
+  border: 3px solid rgb(88, 86, 86);
+  padding: 20px;
+  margin-top: 10px;
+  width: 400px;
+}
+
+input,
+button {
+  padding: 7px;
+  font-size: 13px;
+}
+
+a {
+  background-color: rgb(255, 255, 1);
+}
+
+#your-name h2 {
+  color: olivedrab;
+}
+
+#course-image {
+  width: 300px;
+}
