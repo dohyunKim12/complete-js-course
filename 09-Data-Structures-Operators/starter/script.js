@@ -64,49 +64,118 @@ const restaurant = {
   },
 };
 
-////////////////////////////////////
-// Rest Pattern and Parameters
-
-// 1)  Destructuring
-// Spread, beacause on RIGHT side of =
-const arr = [1.2, ...[3, 4]];
-
-// REST, because on LEFT side of =
-const [a, b, ...others] = [1, 2, 3, 4, 5];
-console.log(a, b, others);
-
-const [piz, , ris, ...otherFoods] = [
-  ...restaurant.mainMenu,
-  ...restaurant.starterMenu,
-];
-console.log(piz, ris, otherFoods);
-
-// Objects
-const { sat, ...weekdays } = restaurant.openingHours;
-console.log(weekdays);
-console.log(sat);
-
-// 2) Functions
-const add = function (...numbers) {
-  const reducer = (acc, cur) => acc + cur;
-  console.log(numbers.reduce(reducer));
+// ////////////////////////////////////
+// Logical Assignment Operators.
+const rest1 = {
+  name: 'Capri',
+  // numGuests: 20,
+  numGuests: 0,
 };
 
-add(2, 3);
-add(5, 3, 7, 2);
-add(8, 5, 4, 3, 2, 1, 0, 5, 4);
+const rest2 = {
+  name: 'La Piazza',
+  owner: 'Giovanni Rossi',
+};
 
-const x = [23, 5, 7];
-add(...x); // Spread Operator
-// add function 에 들어가는 순간, 다시 rest 연산자에 의해 배열로 압축됨.
-// Spread operator는 배열을 요소요소로 반환.
-// Rest operator는 반대로 요소요소를 배열로 묶음.
+// rest1.numGuests = rest1.numGuests || 10;
+// rest2.numGuests = rest2.numGuests || 10;
 
-restaurant.orderPizza('mushrooms', 'onion', 'olives', 'spinach');
-restaurant.orderPizza('mushrooms');
+// OR assignment operator
+// rest1.numGuests ||= 10; // It Works.
+// rest2.numGuests ||= 10;
+
+// Nullish assignment operator (null or undefined)
+rest1.numGuests ??= 10;
+rest2.numGuests ??= 10;
+
+// rest1.owner = rest1.owner && '<ANDONYMOUS>';
+// rest2.owner = rest2.owner && '<ANDONYMOUS>';
+rest1.owner &&= '<ANONYMOUS>';
+rest2.owner &&= '<ANONYMOUS>';
+
+console.log(rest1);
+console.log(rest2);
+
+// console.log('----OR----');
+// ////////////////////////////////////
+// // // Logical Operator Short Circuiting.
+// // // Can use ANY DataType, return ANY DataType
+// console.log(3 || 'Dohyun');
+// console.log('' || 'Dohyun');
+// console.log(true || 0);
+// console.log(undefined || null);
+
+// console.log(undefined || 0 || '' || 'Hello' || 23 || null);
+
+// // turnary Operator
+// restaurant.numGuests = 23;
+// const guests1 = restaurant.numGuests ? restaurant.numGuests : 10;
+// console.log(guests1);
+
+// // Short Circuiting
+// const guests2 = restaurant.numGuests || 10;
+// console.log(guests2);
+
+// console.log('----AND----');
+// console.log(0 && 'Dohyun');
+
+// if (restaurant.orderPizza) {
+//   restaurant.orderPizza('mushrooms', 'spinach');
+// }
+
+// restaurant.orderPizza && restaurant.orderPizza('mushrooms', 'ham');
+
+// console.log('----Nullish Coalescing----');
+// restaurant.numGuests = 0;
+// const guests = restaurant.numGuests || 10;
+// console.log(guests);
+
+// const guestsCorrect = restaurant.numGuests ?? 10;
+// console.log(guestsCorrect); // It works! ( 0과 ''을 falsy value로 취급하지 않는다.)
 
 ////////////////////////////////////
-// Spread Operator (Unpacked Arrays)
+// // Rest Pattern and Parameters
+
+// // 1)  Destructuring
+// // Spread, beacause on RIGHT side of =
+// const arr = [1.2, ...[3, 4]];
+
+// // REST, because on LEFT side of =
+// const [a, b, ...others] = [1, 2, 3, 4, 5];
+// console.log(a, b, others);
+
+// const [piz, , ris, ...otherFoods] = [
+//   ...restaurant.mainMenu,
+//   ...restaurant.starterMenu,
+// ];
+// console.log(piz, ris, otherFoods);
+
+// // Objects
+// const { sat, ...weekdays } = restaurant.openingHours;
+// console.log(weekdays);
+// console.log(sat);
+
+// // 2) Functions
+// const add = function (...numbers) {
+//   const reducer = (acc, cur) => acc + cur;
+//   console.log(numbers.reduce(reducer));
+// };
+
+// add(2, 3);
+// add(5, 3, 7, 2);
+// add(8, 5, 4, 3, 2, 1, 0, 5, 4);
+
+// const x = [23, 5, 7];
+// add(...x); // Spread Operator
+// // add function 에 들어가는 순간, 다시 rest 연산자에 의해 배열로 압축됨.
+// // Spread operator는 배열을 요소요소로 반환.
+// // Rest operator는 반대로 요소요소를 배열로 묶음.
+
+// restaurant.orderPizza('mushrooms', 'onion', 'olives', 'spinach');
+// restaurant.orderPizza('mushrooms');
+
+////////////////////////////////////
+// // Spread Operator (Unpacked Arrays)
 // const arr = [7, 8, 9];
 // const badNewArr = [1, 2, arr[0], arr[1], arr[2]];
 // console.log(badNewArr);
@@ -196,7 +265,7 @@ restaurant.orderPizza('mushrooms');
 // console.log(o, c);
 
 ////////////////////////////////////
-// Destructuring Arrays
+// // Destructuring Arrays
 // const arr = [2, 3, 4];
 // const a = arr[0];
 // const b = arr[1];
