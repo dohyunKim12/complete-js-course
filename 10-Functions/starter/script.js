@@ -330,6 +330,8 @@ const boardPassengers = function (n, wait) {
   console.log(`Will start boarding in ${wait} seconds`);
 };
 
+boardPassengers(2000, 5);
+
 const perGroup = 1000; // 얘는 무시됨. (cover over)
 boardPassengers(180, 2);
 
