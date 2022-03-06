@@ -607,7 +607,8 @@ const restaurant = {
 //   starterIndex: 2,
 // };
 
-// restaurant.orderDelivery(deliveryObj); // Object 하나만 보낸다. 그러면 fucntion에서 자체적으로 destructuring.
+// restaurant.orderDelivery(deliveryObj);
+// Object 하나만 보낸다. 그러면 fucntion에서 자체적으로 destructuring.
 // restaurant.orderDelivery({
 //   mainIndex: 0,
 // });
