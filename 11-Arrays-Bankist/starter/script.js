@@ -74,7 +74,58 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+// // Arrays are object, and can use built-in methods.
 
-// btnLogin.addEventListener('click', function () {
-//   alert('btn clicked!');
-// });
+// Looping Arrays: For Each
+for (const movement of movements) {
+  if (movement > 0) {
+    console.log(`You deposited ${movement}`);
+  } else {
+    console.log(`You withdrew ${Math.abs(movement)}`);
+  }
+}
+
+// // AT method. 언제쓰냐?? -> 마지막 요소 출력시 유용.(String 에도 가능)
+// const arr = [23, 11, 64];
+// console.log(arr[0]);
+// console.log(arr.at(0)); //same as above (위의 코드는 사실 이와같이 작동하는 것임.)
+
+// console.log(arr[-1]); //doesn't work.
+
+// //Getting the last element
+// console.log(arr[arr.length - 1]);
+// console.log(arr.slice(-1)[0]);
+// console.log(arr.at(-1)); // Use this instead of above.
+
+// let arr = ['a', 'b', 'c', 'd', 'e'];
+// // SLICE
+// console.log(arr.slice(2));
+// console.log(arr.slice(1, 3)); // position 1부터 position 3미만까지 요소들 삭제.
+// console.log(arr.slice(-2));
+// console.log(arr.slice(-1));
+// console.log(arr.slice(1, -1));
+// // Shallow copy
+// console.log(arr.slice());
+// console.log([...arr]);
+
+// // SPLICE
+// // All the same as slice, BUT, It change original array.
+// // 보통 splice method는 원본array의 요소를 delete할 때 많이 사용. (slice의 목적과는 다름.)
+// console.log(arr.splice(2));
+// // arr.splice(-1); // 마지막 요소 삭제.
+// arr.splice(1, 3); // position 1부터 3개 요소 삭제.
+// console.log(arr);
+
+// // REVERSE
+// const arr = ['a', 'b', 'c', 'd', 'e'];
+// const arr2 = ['j', 'i', 'h', 'g', 'f'];
+// console.log(arr2.reverse()); // original array 또한 바뀐다.
+// console.log(arr2);
+
+// // CONCAT
+// const letters = arr.concat(arr2);
+// console.log(letters);
+// console.log([...arr, ...arr2]); //Just same as above
+
+// // JOIN
+// console.log(letters.join('-')); // 명시한 seperator를 이용해 string을 만듦.
