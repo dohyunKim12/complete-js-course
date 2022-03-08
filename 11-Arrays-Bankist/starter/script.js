@@ -77,13 +77,28 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 // // Arrays are object, and can use built-in methods.
 
 // Looping Arrays: For Each
-for (const movement of movements) {
+// for (const movement of movements) {
+for (const [i, movement] of movements.entries()) {
   if (movement > 0) {
-    console.log(`You deposited ${movement}`);
+    console.log(`Movement ${i + 1}: You deposited ${movement}`);
   } else {
-    console.log(`You withdrew ${Math.abs(movement)}`);
+    console.log(`Movement ${i + 1}: You withdrew ${Math.abs(movement)}`);
   }
 }
+
+console.log('----FOR EACH----'); // BETTER to use FOREACH method.
+// CALLBACK method를 정의. , Continue와 break은 여기서는 안통함.
+movements.forEach(function (mov, idx, arr) {
+  if (mov > 0) {
+    console.log(`Movement ${idx + 1}: You deposited ${mov}`);
+  } else {
+    console.log(`Movement ${idx + 1}: You withdrew ${Math.abs(mov)}`);
+  }
+});
+// 0: function(200)
+// 1: function(450)
+// 2: function(400)
+// ...
 
 // // AT method. 언제쓰냐?? -> 마지막 요소 출력시 유용.(String 에도 가능)
 // const arr = [23, 11, 64];
