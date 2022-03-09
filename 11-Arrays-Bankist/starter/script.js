@@ -71,30 +71,48 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 
+const currenciesUnique = new Set(['USD', 'GBP', 'USD', 'EUR', 'EUR']);
+console.log(currenciesUnique);
+
+currenciesUnique.forEach(function (value, val, set) {
+  console.log(value);
+  console.log(val);
+  console.log(set);
+});
+
+console.log('----forEach on Map');
+/////////////////////////////////////////////////
+// // For Each method on MAP.
+currencies.forEach(function (currency, key, maps) {
+  console.log(currency);
+  console.log(key);
+  console.log(maps);
+});
+
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
 // // Arrays are object, and can use built-in methods.
 
-// Looping Arrays: For Each
-// for (const movement of movements) {
-for (const [i, movement] of movements.entries()) {
-  if (movement > 0) {
-    console.log(`Movement ${i + 1}: You deposited ${movement}`);
-  } else {
-    console.log(`Movement ${i + 1}: You withdrew ${Math.abs(movement)}`);
-  }
-}
+// // Looping Arrays: For Each
+// // for (const movement of movements) {
+// for (const [i, movement] of movements.entries()) {
+//   if (movement > 0) {
+//     console.log(`Movement ${i + 1}: You deposited ${movement}`);
+//   } else {
+//     console.log(`Movement ${i + 1}: You withdrew ${Math.abs(movement)}`);
+//   }
+// }
 
-console.log('----FOR EACH----'); // BETTER to use FOREACH method.
-// CALLBACK method를 정의. , Continue와 break은 여기서는 안통함.
-movements.forEach(function (mov, idx, arr) {
-  if (mov > 0) {
-    console.log(`Movement ${idx + 1}: You deposited ${mov}`);
-  } else {
-    console.log(`Movement ${idx + 1}: You withdrew ${Math.abs(mov)}`);
-  }
-});
+// console.log('----FOR EACH----'); // BETTER to use FOREACH method.
+// // CALLBACK method를 정의. , Continue와 break은 여기서는 안통함.
+// movements.forEach(function (mov, idx, arr) {
+//   if (mov > 0) {
+//     console.log(`Movement ${idx + 1}: You deposited ${mov}`);
+//   } else {
+//     console.log(`Movement ${idx + 1}: You withdrew ${Math.abs(mov)}`);
+//   }
+// });
 // 0: function(200)
 // 1: function(450)
 // 2: function(400)
