@@ -6,7 +6,7 @@
 
 // Data
 const account1 = {
-  owner: 'Jonas Schmedtmann',
+  owner: 'Dohyun Kim',
   movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
   interestRate: 1.2, // %
   pin: 1111,
@@ -61,33 +61,82 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = ''; // textContent와 비슷하나, 텍스트 뿐 아니라 html 모든 tag들에 대한 것.
+  // .textContent = 0
+
+  movements.forEach(function (mov, index) {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const html = `
+      <div class="movements__row">
+        <div class="movements__type movements__type--${type}">${
+      index + 1
+    } ${type}</div>
+        <div class="movements__value">${mov}</div>
+      </div>
+    `;
+
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
+
+displayMovements(account1.movements);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+// Array Methods.
+// MAP (simillar forEach, 그러나 새로운 배열 생성.)
+// FLITER (조건을 만족하는 요소들만 추려서 새로운 배열 생성.)
+// REDUCE (배열 요소들을 하나로 합침. snowball 연상.)
 
-const currenciesUnique = new Set(['USD', 'GBP', 'USD', 'EUR', 'EUR']);
-console.log(currenciesUnique);
+// MAP Methods.
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const eurToUsd = 1.1;
 
-currenciesUnique.forEach(function (value, val, set) {
-  console.log(value);
-  console.log(val);
-  console.log(set);
-});
+const movementsUSD = movements.map(mov => Math.floor(mov * eurToUsd));
 
-console.log('----forEach on Map');
-/////////////////////////////////////////////////
-// // For Each method on MAP.
-currencies.forEach(function (currency, key, maps) {
-  console.log(currency);
-  console.log(key);
-  console.log(maps);
-});
+console.log(movements);
+console.log(movementsUSD);
+
+const movementsUSDfor = [];
+for (const mov of movements) {
+  movementsUSDfor.push(Math.floor(mov * eurToUsd));
+}
+// 이 방식보다 위에 map을 쓰는 방식이 훨씬 좋음. (functional programming)
+
+const movementsDescriptions = movements.map(
+  (mov, i) =>
+    `Movement ${i + 1}: You ${mov > 0 ? 'depositied' : 'withdrew'} ${mov}`
+);
+
+console.log(movementsDescriptions);
+
+// const currencies = new Map([
+//   ['USD', 'United States dollar'],
+//   ['EUR', 'Euro'],
+//   ['GBP', 'Pound sterling'],
+// ]);
+
+// const currenciesUnique = new Set(['USD', 'GBP', 'USD', 'EUR', 'EUR']);
+// console.log(currenciesUnique);
+
+// currenciesUnique.forEach(function (value, val, set) {
+//   console.log(value);
+//   console.log(val);
+//   console.log(set);
+// });
+
+// console.log('----forEach on Map');
+// /////////////////////////////////////////////////
+// // // For Each method on MAP.
+// currencies.forEach(function (currency, key, maps) {
+//   console.log(currency);
+//   console.log(key);
+//   console.log(maps);
+// });
 
 // const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
