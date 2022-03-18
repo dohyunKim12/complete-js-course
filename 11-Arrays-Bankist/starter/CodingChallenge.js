@@ -19,4 +19,18 @@ const checkDogs = function (dogsJulia, dogsKate) {
   });
 };
 
+const calcAverageHumanAge = function (ages) {
+  const humanAgesAvg =
+    ages
+      .map(function (age) {
+        return age <= 2 ? 2 * age : 16 + age * 4;
+      })
+      .filter(age => age >= 18)
+      .reduce((prev, cur) => prev + cur, 0) / ages.length;
+
+  return humanAgesAvg;
+};
+
 checkDogs([1, 2, 3, 4, 5], [7, 5, 2, 4, 3]);
+
+console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));

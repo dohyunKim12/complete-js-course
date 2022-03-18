@@ -81,38 +81,191 @@ const displayMovements = function (movements) {
   });
 };
 
-displayMovements(account1.movements);
+const createUsername = function (accounts) {
+  accounts.forEach(function (account) {
+    account.username = account.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+createUsername(accounts);
+
+const calcDisplayBalance = function (movements) {
+  currentAccount.balance = movements.reduce((prev, cur) => prev + cur, 0);
+  labelBalance.textContent = `${currentAccount.balance}€`;
+};
+
+const calcDisplaySummary = function (movements) {
+  const incomes = movements
+    .filter(mov => mov > 0)
+    .reduce((prev, cur) => prev + cur, 0);
+  labelSumIn.textContent = `${incomes}€`;
+
+  const outgoes = Math.abs(
+    movements.filter(mov => mov < 0).reduce((prev, cur) => prev + cur, 0)
+  );
+  labelSumOut.textContent = `${outgoes}€`;
+
+  const interest = movements
+    .filter(mov => mov > 0)
+    .map(deposit => (deposit * currentAccount.interestRate) / 100)
+    .filter(int => int >= 1)
+    .reduce((prev, cur) => prev + cur, 0);
+  labelSumInterest.textContent = `${interest}€`;
+};
+
+// Event Handlers
+let currentAccount = '';
+
+btnLogin.addEventListener('click', function (event) {
+  // form 안에 커서를 두고 Enter를 쳐도 click과 동일한 효과가 일어남.
+  // Prevent form from submitting.
+  event.preventDefault();
+
+  currentAccount = accounts.find(
+    account => account.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // Display UI and Welcome message.
+    labelWelcome.textContent = `Welcome back, ${
+      currentAccount.owner.split(' ')[0]
+    }`;
+
+    containerApp.style.opacity = 1;
+
+    // Clear Input Fields
+    inputLoginUsername.value = '';
+    inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    // // Display Movements
+    // displayMovements(currentAccount.movements);
+
+    // // Display Balance
+    // calcDisplayBalance(currentAccount.movements);
+
+    // // Dispaly Summary
+    // calcDisplaySummary(currentAccount.movements);
+    updateUI(currentAccount);
+  }
+});
+
+const updateUI = function (acc) {
+  displayMovements(acc.movements);
+  calcDisplayBalance(acc.movements);
+  calcDisplaySummary(acc.movements);
+};
+// Transfer
+btnTransfer.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+  const receiverAccount = accounts.find(
+    account => account.username === inputTransferTo.value
+  );
+
+  inputTransferAmount.value = inputTransferTo = '';
+
+  if (
+    amount > 0 &&
+    currentAccount.balance >= amount &&
+    receiverAccount !== currentAccount.username
+  ) {
+    // Negative movement for current User
+    currentAccount.movements.push(-amount);
+    // Positive movement for receiver
+    receiverAccount.movements.push(amount);
+    updateUI(currentAccount);
+  } else alert('fuck you!!');
+});
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+// // FIND method.
+// const firstWithDrawal = movements.find(mov => mov < 0); // only return first element that satisfy condition in array.
+// console.log(firstWithDrawal);
+
+// const account = accounts.find(function (account) {
+//   return account.owner == 'Jessica Davis';
+// });
+// console.log(accounts);
+// console.log(account);
+
+// const eurToUsd = 1.1;
+
+// const totalDepositsUSD = movements
+//   .filter(mov => mov > 0)
+//   .map((mov, i, arr) => {
+//     console.log(arr);
+//     return mov * eurToUsd;
+//   })
+//   // .map(mov => mov * eurToUsd)
+//   .reduce((prev, cur) => prev + cur);
+
+// console.log(totalDepositsUSD);
+
 // Array Methods.
+
 // MAP (simillar forEach, 그러나 새로운 배열 생성.)
 // FLITER (조건을 만족하는 요소들만 추려서 새로운 배열 생성.)
 // REDUCE (배열 요소들을 하나로 합침. snowball 연상.)
 
-// MAP Methods.
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-const eurToUsd = 1.1;
+// // FLITER Method.
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// console.log(movements);
 
-const movementsUSD = movements.map(mov => Math.floor(mov * eurToUsd));
+// const deposit = movements.filter(function (mov) {
+//   return mov > 0;
+// });
 
-console.log(movements);
-console.log(movementsUSD);
+// const withdrawal = movements.filter(mov => mov < 0);
+// console.log(deposit);
+// console.log(withdrawal);
 
-const movementsUSDfor = [];
-for (const mov of movements) {
-  movementsUSDfor.push(Math.floor(mov * eurToUsd));
-}
-// 이 방식보다 위에 map을 쓰는 방식이 훨씬 좋음. (functional programming)
+// // REDUCE Method (Array를 하나의 value로 ..)
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-const movementsDescriptions = movements.map(
-  (mov, i) =>
-    `Movement ${i + 1}: You ${mov > 0 ? 'depositied' : 'withdrew'} ${mov}`
-);
+// const balance = movements.reduce(function (prev, cur, idx, arr) {
+//   console.log(`Iteration ${idx} in ${arr}: ${prev}`);
+//   return prev + cur;
+// }, 0);
 
-console.log(movementsDescriptions);
+// console.log(balance);
+
+// // reduce 함수를 이용하여 maximum value를 이렇게 구할 수 도 있음.
+// const max = movements.reduce((prev, cur) => {
+//   if (prev > cur) return prev;
+//   else return cur;
+// }, movements[0]);
+
+// // MAP Method.
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const eurToUsd = 1.1;
+
+// const movementsUSD = movements.map(mov => Math.floor(mov * eurToUsd));
+
+// console.log(movements);
+// console.log(movementsUSD);
+
+// const movementsUSDfor = [];
+// for (const mov of movements) {
+//   movementsUSDfor.push(Math.floor(mov * eurToUsd));
+// }
+// // 이 방식보다 위에 map을 쓰는 방식이 훨씬 좋음. (functional programming)
+
+// const movementsDescriptions = movements.map(
+//   (mov, i) =>
+//     `Movement ${i + 1}: You ${mov > 0 ? 'depositied' : 'withdrew'} ${mov}`
+// );
+
+// console.log(movementsDescriptions);
 
 // const currencies = new Map([
 //   ['USD', 'United States dollar'],
