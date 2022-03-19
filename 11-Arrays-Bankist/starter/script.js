@@ -167,7 +167,7 @@ btnTransfer.addEventListener('click', function (e) {
     account => account.username === inputTransferTo.value
   );
 
-  inputTransferAmount.value = inputTransferTo = '';
+  inputTransferAmount.value = inputTransferTo.value = '';
 
   if (
     amount > 0 &&
@@ -180,6 +180,31 @@ btnTransfer.addEventListener('click', function (e) {
     receiverAccount.movements.push(amount);
     updateUI(currentAccount);
   } else alert('fuck you!!');
+});
+
+// Close account (Delete account)
+btnClose.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  if (
+    inputCloseUsername.value === currentAccount.username &&
+    Number(inputClosePin.value) === currentAccount.pin
+  ) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    const index2 = accounts.indexOf(currentAccount);
+
+    console.log(index);
+    console.log(index2);
+    // Delete account
+    accounts.splice(index, 1);
+
+    // Hide UI
+    containerApp.style.opacity = 100;
+  }
+
+  inputCloseUsername.value = inputClosePin.value = '';
 });
 
 /////////////////////////////////////////////////
