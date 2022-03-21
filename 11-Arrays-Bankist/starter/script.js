@@ -153,6 +153,23 @@ btnLogin.addEventListener('click', function (event) {
   }
 });
 
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    // Add movements
+    currentAccount.movements.push(amount);
+
+    // Update UI
+    updateUI(currentAccount);
+  } else {
+    alert('What the fuck are you trying?');
+  }
+  inputLoanAmount.value = '';
+});
+
 const updateUI = function (acc) {
   displayMovements(acc.movements);
   calcDisplayBalance(acc.movements);
@@ -211,7 +228,28 @@ btnClose.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 // LECTURES
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+// SOME
+// EQUALITY
+console.log(movements.includes(-130));
+console.log(movements.some(mov => mov === -130)); // same as this.
+
+// CONDITION
+const anyDeposits = movements.some(mov => mov > 5000);
+const anyDeposits2 = movements.some(mov => mov > 50);
+console.log(anyDeposits);
+console.log(anyDeposits2);
+
+// EVERY
+console.log(movements.every(mov => mov > 0));
+console.log(account4.movements.every(mov => mov > 0));
+
+// Seprate callback !!!
+const deposit = mov => mov > 0; // 이렇게 정의해놓고, callback에서 사용 가능!
+console.log(movements.some(deposit));
+console.log(movements.every(deposit));
+console.log(movements.filter(deposit));
 
 // // FIND method.
 // const firstWithDrawal = movements.find(mov => mov < 0); // only return first element that satisfy condition in array.
