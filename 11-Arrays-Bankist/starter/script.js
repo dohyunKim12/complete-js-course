@@ -61,11 +61,13 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const displayMovements = function (movements) {
+const displayMovements = function (movements, sort = false) {
   containerMovements.innerHTML = ''; // textContent와 비슷하나, 텍스트 뿐 아니라 html 모든 tag들에 대한 것.
   // .textContent = 0
 
-  movements.forEach(function (mov, index) {
+  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+
+  movs.forEach(function (mov, index) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
 
     const html = `
@@ -73,7 +75,7 @@ const displayMovements = function (movements) {
         <div class="movements__type movements__type--${type}">${
       index + 1
     } ${type}</div>
-        <div class="movements__value">${mov}</div>
+        <div class="movements__value">${mov}€</div>
       </div>
     `;
 
@@ -224,32 +226,137 @@ btnClose.addEventListener('click', function (e) {
   inputCloseUsername.value = inputClosePin.value = '';
 });
 
+// Sort orders
+let sorted = false;
+btnSort.addEventListener('click', function (e) {
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+});
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-// SOME
-// EQUALITY
-console.log(movements.includes(-130));
-console.log(movements.some(mov => mov === -130)); // same as this.
+// More ways creating arrays
+const arr = [1, 2, 3, 4, 5, 6, 7];
+console.log(new Array(1, 2, 3, 4, 5, 6, 7));
 
-// CONDITION
-const anyDeposits = movements.some(mov => mov > 5000);
-const anyDeposits2 = movements.some(mov => mov > 50);
-console.log(anyDeposits);
-console.log(anyDeposits2);
+// Empty arrays + fill methods
+const x = new Array(7);
+x.map(() => 5);
+console.log(x);
+// x.fill(1);
+x.fill(1, 3, 5);
+console.log(x);
 
-// EVERY
-console.log(movements.every(mov => mov > 0));
-console.log(account4.movements.every(mov => mov > 0));
+arr.fill(23, 2, 6);
+console.log(arr);
 
-// Seprate callback !!!
-const deposit = mov => mov > 0; // 이렇게 정의해놓고, callback에서 사용 가능!
-console.log(movements.some(deposit));
-console.log(movements.every(deposit));
-console.log(movements.filter(deposit));
+// Array.from
+const y = Array.from({ length: 7 }, () => 1);
+// first parameter는 length 전달, second parameter는 map의 callback function과 동일하게 작성.
+console.log(y);
+
+const z = Array.from({ length: 7 }, (_, i) => i + 1); // _ 는 throwaway variable. (필요없는 parameter)
+console.log(z);
+
+// Array.from 의 좋은 예시. (querySelectorAll)
+labelBalance.addEventListener('click', function (e) {
+  e.preventDefault();
+  const movementsUI = Array.from(
+    document.querySelectorAll('.movements__value'),
+    el => Number(el.textContent.replace('€', ''))
+  );
+  console.log(movementsUI);
+
+  // 이런식으로 spread operator 활용도 가능은 함.
+  const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+  console.log(movementsUI2);
+});
+
+// FLAT
+// const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
+// console.log(arr);
+// console.log(arr.flat()); // Only goes 1 level deep
+
+// const arrDeep = [[[1, 2], 3], [4, [5, 6]], 7, 8];
+// console.log(arrDeep);
+// console.log(arrDeep.flat(2));
+
+// const accountMovements = accounts.map(acc => acc.movements);
+// console.log(accountMovements);
+
+// const allMovements = accountMovements.flat();
+// console.log(allMovements);
+// const overallBalance = allMovements.reduce((prev, cur) => prev + cur, 0);
+// console.log(overallBalance);
+
+// // flat
+// const overallBalance = accounts
+//   .map(acc => acc.movements)
+//   .flat()
+//   .reduce((prev, cur) => prev + cur, 0);
+
+// console.log(overallBalance);
+
+// // flatMap
+// const overallBalance2 = accounts
+//   .flatMap(acc => acc.movements) // map 후 flat 하는것 뿐.
+//   .reduce((prev, cur) => prev + cur, 0);
+
+// console.log(overallBalance2);
+
+// // Sort strings
+// const owners = ['Dohyun', 'Zach', 'Adam', 'Martha'];
+// owners.sort();
+// console.log(owners);
+
+// // Sort numbers
+// console.log(movements);
+// movements.sort(); // 예상치 못한 결과 도출. 이유는 string기반 sort이기 때문.
+// console.log(movements);
+
+// // Use callback function to sort
+// // return < 0,  A, B (keep order)
+// // return > 0,  B, A (switch order)
+// movements.sort((a, b) => {
+//   // Ascending
+//   if (a > b) return 1;
+//   else return -1;
+// });
+// movements.sort((a, b) => a - b); // same as above
+
+// movements.sort((a, b) => {
+//   // Descending
+//   if (a > b) return -1;
+//   else return 1;
+// });
+// movements.sort((a, b) => b - a); // same as above
+// console.log(movements);
+
+// // SOME
+// // EQUALITY
+// console.log(movements.includes(-130));
+// console.log(movements.some(mov => mov === -130)); // same as this.
+
+// // CONDITION
+// const anyDeposits = movements.some(mov => mov > 5000);
+// const anyDeposits2 = movements.some(mov => mov > 50);
+// console.log(anyDeposits);
+// console.log(anyDeposits2);
+
+// // EVERY
+// console.log(movements.every(mov => mov > 0));
+// console.log(account4.movements.every(mov => mov > 0));
+
+// // Seprate callback !!!
+// const deposit = mov => mov > 0; // 이렇게 정의해놓고, callback에서 사용 가능!
+// console.log(movements.some(deposit));
+// console.log(movements.every(deposit));
+// console.log(movements.filter(deposit));
 
 // // FIND method.
 // const firstWithDrawal = movements.find(mov => mov < 0); // only return first element that satisfy condition in array.
