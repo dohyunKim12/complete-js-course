@@ -238,44 +238,129 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 // LECTURES
 
+// Which Array method to Use?
+
+// To mutate original array
+// ADD : .push .unshift
+// REMOVE : .pop .shift .splice
+// Others : .reverse .sort .fill
+
+// A new array
+// .map .filter .slice .concat .flat .flatMap
+
+// An array index
+// .indexOf .findIndex
+
+// An array element
+// .find
+
+// Know if array includes
+// .includes .some .every
+
+// A new string
+// .join
+
+// To transform to value
+// .reduce
+
+// To just loop array
+// .forEach
+
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-// More ways creating arrays
-const arr = [1, 2, 3, 4, 5, 6, 7];
-console.log(new Array(1, 2, 3, 4, 5, 6, 7));
+// ARRAY METHODS PRACTICE
 
-// Empty arrays + fill methods
-const x = new Array(7);
-x.map(() => 5);
-console.log(x);
-// x.fill(1);
-x.fill(1, 3, 5);
-console.log(x);
+// 1.
+const bankDepositSum = accounts
+  .flatMap(acc => acc.movements)
+  .filter(mov => mov > 0)
+  .reduce((prev, cur) => prev + cur, 0);
 
-arr.fill(23, 2, 6);
-console.log(arr);
+console.log(bankDepositSum);
 
-// Array.from
-const y = Array.from({ length: 7 }, () => 1);
-// first parameter는 length 전달, second parameter는 map의 callback function과 동일하게 작성.
-console.log(y);
+// 2.
+// const numDeposits1000 = accounts
+//   .flatMap(acc => acc.movements)
+//   .filter(mov => mov >= 1000).length;
 
-const z = Array.from({ length: 7 }, (_, i) => i + 1); // _ 는 throwaway variable. (필요없는 parameter)
-console.log(z);
+// Reduce로 하는 방법도 있음.
+const numDeposits1000 = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((count, cur) => (cur >= 1000 ? ++count : count), 0);
+console.log(numDeposits1000);
 
-// Array.from 의 좋은 예시. (querySelectorAll)
-labelBalance.addEventListener('click', function (e) {
-  e.preventDefault();
-  const movementsUI = Array.from(
-    document.querySelectorAll('.movements__value'),
-    el => Number(el.textContent.replace('€', ''))
+// 3.
+// Creating object by reduce
+const { deposits, withdrawals } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      // cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur; // 이렇게도 가능! (littlebit cleaner)
+      return sums; // always need to return accumulator
+    },
+    { deposits: 0, withdrawals: 0 }
   );
-  console.log(movementsUI);
+console.log(deposits, withdrawals);
 
-  // 이런식으로 spread operator 활용도 가능은 함.
-  const movementsUI2 = [...document.querySelectorAll('.movements__value')];
-  console.log(movementsUI2);
-});
+// 4.
+// Convert any string to title case
+// this is a nice title -> This Is a Nice Title
+const convertTitleCase = function (title) {
+  const capitalize = str => str[0].toUpperCase() + str.slice(1);
+
+  const exceptions = ['a', 'an', 'and', 'the', 'but', 'in', 'with', '...etc'];
+
+  let titleCase = title
+    .toLowerCase()
+    .split(' ')
+    .map(word =>
+      exceptions.includes(word) ? word : word[0].toUpperCase() + word.slice(1)
+    )
+    .join(' ');
+
+  return capitalize(titleCase);
+};
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('this is a LONG title but not too long'));
+console.log(convertTitleCase('and here is another title with an EXAMPLE'));
+
+// // More ways creating arrays
+// const arr = [1, 2, 3, 4, 5, 6, 7];
+// console.log(new Array(1, 2, 3, 4, 5, 6, 7));
+
+// // Empty arrays + fill methods
+// const x = new Array(7);
+// x.map(() => 5);
+// console.log(x);
+// // x.fill(1);
+// x.fill(1, 3, 5);
+// console.log(x);
+
+// arr.fill(23, 2, 6);
+// console.log(arr);
+
+// // Array.from
+// const y = Array.from({ length: 7 }, () => 1);
+// // first parameter는 length 전달, second parameter는 map의 callback function과 동일하게 작성.
+// console.log(y);
+
+// const z = Array.from({ length: 7 }, (_, i) => i + 1); // _ 는 throwaway variable. (필요없는 parameter)
+// console.log(z);
+
+// // Array.from 의 좋은 예시. (querySelectorAll)
+// labelBalance.addEventListener('click', function (e) {
+//   e.preventDefault();
+//   const movementsUI = Array.from(
+//     document.querySelectorAll('.movements__value'),
+//     el => Number(el.textContent.replace('€', ''))
+//   );
+//   console.log(movementsUI);
+
+//   // 이런식으로 spread operator 활용도 가능은 함.
+//   const movementsUI2 = [...document.querySelectorAll('.movements__value')];
+//   console.log(movementsUI2);
+// });
 
 // FLAT
 // const arr = [[1, 2, 3], [4, 5, 6], 7, 8];
