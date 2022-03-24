@@ -21,9 +21,9 @@ const account1 = {
     '2020-01-28T09:15:04.904Z',
     '2020-04-01T10:17:24.185Z',
     '2020-05-08T14:11:59.604Z',
-    '2020-05-27T17:01:17.194Z',
-    '2020-07-11T23:36:17.929Z',
-    '2020-07-12T10:51:36.790Z',
+    '2022-03-17T17:01:17.194Z',
+    '2022-03-23T23:36:17.929Z',
+    '2022-03-24T10:51:36.790Z',
   ],
   currency: 'EUR',
   locale: 'pt-PT', // de-DE
@@ -81,20 +81,48 @@ const inputClosePin = document.querySelector('.form__input--pin');
 /////////////////////////////////////////////////
 // Functions
 
-const displayMovements = function (movements, sort = false) {
+const formatMovement = function (date, locale) {
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24))); // milliseconds, minuate, hours, days
+
+  const daysPassed = calcDaysPassed(new Date(), date);
+  console.log(daysPassed);
+
+  if (daysPassed === 0) return 'Today';
+  if (daysPassed === 1) return 'Yesterday';
+  if (daysPassed <= 7) return `${daysPassed} days ago`;
+  else {
+    // const day = date.getDate().toString().padStart(2, 0);
+    // const month = (date.getMonth() + 1).toString().padStart(2, 0);
+    // const year = date.getFullYear();
+    // return `${day}/${month}/${year}`;
+    return new Intl.DateTimeFormat(locale).format(date);
+  }
+};
+
+const displayMovements = function (acc, sort = false) {
   containerMovements.innerHTML = '';
 
-  const movs = sort ? movements.slice().sort((a, b) => a - b) : movements;
+  const movs = sort
+    ? acc.movements.slice().sort((a, b) => a - b)
+    : acc.movements;
 
   movs.forEach(function (mov, i) {
     const type = mov > 0 ? 'deposit' : 'withdrawal';
+
+    const date = new Date(acc.movementsDates[i]);
+
+    const displayDate = formatMovement(date, acc.locale);
+
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);
 
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${
       i + 1
     } ${type}</div>
-        <div class="movements__value">${mov}€</div>
+      <div class="movments__date">${displayDate}</div>
+        <div class="movements__value">${formattedMov}</div>
       </div>
     `;
 
@@ -102,21 +130,27 @@ const displayMovements = function (movements, sort = false) {
   });
 };
 
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
+};
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${acc.balance}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes}€`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out)}€`;
+  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -126,7 +160,7 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 const createUsernames = function (accs) {
@@ -142,7 +176,7 @@ createUsernames(accounts);
 
 const updateUI = function (acc) {
   // Display movements
-  displayMovements(acc.movements);
+  displayMovements(acc);
 
   // Display balance
   calcDisplayBalance(acc);
@@ -154,6 +188,27 @@ const updateUI = function (acc) {
 ///////////////////////////////////////
 // Event handlers
 let currentAccount;
+
+// FAKE ALWAYS LOOGED IN
+currentAccount = account1;
+updateUI(currentAccount);
+containerApp.style.opacity = 100;
+
+// // Experimenting API
+// const now = new Date();
+// const options = {
+//   hour: 'numeric',
+//   minute: 'numeric',
+//   day: 'numeric',
+//   month: 'long',
+//   year: 'numeric',
+//   weekday: 'long',
+// };
+
+// const locale = navigator.language;
+// console.log(locale);
+
+// labelDate.textContent = new Intl.DateTimeFormat('ko-KR', options).format(now);
 
 btnLogin.addEventListener('click', function (e) {
   // Prevent form from submitting
@@ -170,6 +225,26 @@ btnLogin.addEventListener('click', function (e) {
       currentAccount.owner.split(' ')[0]
     }`;
     containerApp.style.opacity = 100;
+
+    // Create current Date and Time
+    const now = new Date();
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      weekday: 'long',
+    };
+
+    const locale = currentAccount.locale;
+    console.log(locale);
+
+    labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
+      now
+    );
+
+    // labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
 
     // Clear input fields
     inputLoginUsername.value = inputLoginPin.value = '';
@@ -198,6 +273,10 @@ btnTransfer.addEventListener('click', function (e) {
     currentAccount.movements.push(-amount);
     receiverAcc.movements.push(amount);
 
+    // Add transfer date
+    currentAccount.movementsDates.push(new Date().toISOString());
+    receiverAcc.movementsDates.push(new Date().toISOString());
+
     // Update UI
     updateUI(currentAccount);
   }
@@ -206,11 +285,14 @@ btnTransfer.addEventListener('click', function (e) {
 btnLoan.addEventListener('click', function (e) {
   e.preventDefault();
 
-  const amount = +inputLoanAmount.value;
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     // Add movement
     currentAccount.movements.push(amount);
+
+    // Add loan date
+    currentAccount.movementsDates.push(new Date().toISOString());
 
     // Update UI
     updateUI(currentAccount);
@@ -252,40 +334,212 @@ btnSort.addEventListener('click', function (e) {
 /////////////////////////////////////////////////
 // LECTURES
 
-console.log(23 === 23.0);
+// console.log(23 === 23.0);
 
-// In JS, Numbers are always stored by binary format.
-// Base 10 - 0 to 9.     1/10 = 0.1   10/3 = 3.3333333...
-// Binary base 2 - 0, 1
-console.log(0.1 + 0.2);
-console.log(10 / 3);
-console.log(0.1 + 0.2 === 0.3); // Should be true, but false
+// // In JS, Numbers are always stored by binary format.
+// // Base 10 - 0 to 9.     1/10 = 0.1   10/3 = 3.3333333...
+// // Binary base 2 - 0, 1
+// console.log(0.1 + 0.2);
+// console.log(10 / 3);
+// console.log(0.1 + 0.2 === 0.3); // Should be true, but false
 
-console.log(Number('23'));
-console.log(+'23'); // easier way
+// console.log(Number('23'));
+// console.log(+'23'); // easier way
 
-// Parsing
-console.log(Number('30px'));
-console.log(Number.parseInt('30px', 10)); // number로 시작하는 string을 number로 스마트하게 형변환.
-// (css에서 유용함)
-console.log(Number.parseInt('e30', 10));
+// // Parsing
+// console.log(Number('30px'));
+// console.log(Number.parseInt('30px', 10)); // number로 시작하는 string을 number로 스마트하게 형변환.
+// // (css에서 유용함)
+// console.log(Number.parseInt('e30', 10));
 
-console.log(Number.parseInt('2.5rem')); // 소숫점 버림.
-console.log(Number.parseFloat('2.5rem'));
+// console.log(Number.parseInt('2.5rem')); // 소숫점 버림.
+// console.log(Number.parseFloat('2.5rem'));
 
-// Check if value is NaN
-console.log(Number.isNaN(20)); // Number
-console.log(Number.isNaN('20')); // String
-console.log(Number.isNaN(+'20X')); // NaN
-console.log(Number.isNaN(23 / 0)); // infinity
+// // Check if value is NaN
+// console.log(Number.isNaN(20)); // Number
+// console.log(Number.isNaN('20')); // String
+// console.log(Number.isNaN(+'20X')); // NaN
+// console.log(Number.isNaN(23 / 0)); // infinity
 
-// ****** BEST WAY to Cheching if value is number ******
-console.log(Number.isFinite(20));
-console.log(Number.isFinite('20'));
-console.log(Number.isFinite(+'20x'));
-console.log(Number.isFinite(23 / 0));
+// // ****** BEST WAY to Cheching if value is number ******
+// console.log(Number.isFinite(20));
+// console.log(Number.isFinite('20'));
+// console.log(Number.isFinite(+'20x'));
+// console.log(Number.isFinite(23 / 0));
 
-// 정수확인에는 isInteger도 사용 가능.
-console.log(Number.isInteger(23));
-console.log(Number.isInteger(23.0));
-console.log(Number.isInteger(23 / 0));
+// // 정수확인에는 isInteger도 사용 가능.
+// console.log(Number.isInteger(23));
+// console.log(Number.isInteger(23.0));
+// console.log(Number.isInteger(23 / 0));
+
+// console.log(Math.sqrt(25));
+// console.log(25 ** (1 / 2));
+// console.log(8 ** (1 / 3));
+// console.log(Math.max(5, 18, 23, 11, 2));
+// console.log(Math.max(5, 18, '23', 11, 2)); // type coersion까지 제공.
+// console.log(Math.max(5, 18, '23px', 11, 2)); // this doesn't work
+
+// console.log(Math.min(5, 18, 23, 11, 2));
+
+// console.log(Math.PI * Number.parseFloat('10px') ** 2);
+
+// console.log(Math.trunc(Math.random() * 6) + 1);
+
+// const randomInt = (min, max) => Math.floor(Math.random() * (max - min) + min);
+// console.log(randomInt(1, 100));
+
+// // Rounding Integers
+// console.log(Math.trunc(23.3)); //자름.
+// console.log(Math.round(23.3)); //반올림.
+// console.log(Math.round(23.8));
+
+// console.log(Math.ceil(23.3)); // 올림.
+// console.log(Math.ceil(23.8));
+
+// console.log(Math.floor(23.3)); // 내림.
+// console.log(Math.floor(23.8));
+
+// // 음수의 경우, trunc와 floor는 다르게 동작한다.
+// console.log(Math.trunc(-23.3)); //자름.
+// console.log(Math.floor(-23.3)); //내림.
+
+// // Rounding decimals
+// console.log((2.7).toFixed(0)); // return string. (No Number)
+// console.log((2.7).toFixed(3));
+// console.log((2.345).toFixed(2));
+// console.log(+(2.345).toFixed(2)); // string -> number 로 형변환까지.
+
+// // Remainder Operator
+// console.log(5 % 2);
+// console.log(5 / 2); // 5 = 2 * 2 + 1
+// console.log(8 % 3);
+// console.log(8 / 3); // 8 = 2 * 3 + 2
+
+// console.log(6 % 2); // means even number
+// console.log(7 % 2); // means odd number
+
+// const isEven = n => n % 2 === 0;
+// console.log(isEven(8));
+// console.log(isEven(23));
+// console.log(isEven(514));
+
+// labelBalance.addEventListener('click', function (e) {
+//   e.preventDefault();
+//   [...document.querySelectorAll('.movements__row')].forEach(function (row, i) {
+//     // 0, 2, 4, 6
+//     if (i % 2 === 0) row.style.backgroundColor = 'orangered';
+//     // 0, 3, 6, 9
+//     if (i % 3 === 0) row.style.backgroundColor = 'blue';
+//     // 0, 4, 8
+//     if (i % 4 === 0) row.style.backgroundColor = 'red';
+//   });
+// });
+
+// // Numeric Seperators
+// // 287,460,000,000
+// const diameter = 287_460_000_000; // _ 로 구분가능.
+// console.log(diameter);
+
+// const priceCents = 345_99;
+// console.log(priceCents);
+
+// const transferFee1 = 15_00;
+// const transferFee2 = 1_500;
+
+// const PI = 3.14_15;
+// // const PI = 3._1415; not allowd
+// console.log(PI);
+
+// console.log(Number('230000'));
+// console.log(Number('230_000')); // Doesn't work
+
+// console.log(2 ** 53 - 1); // biggest number can represent
+// console.log(Number.MAX_SAFE_INTEGER);
+// console.log(2 ** 53 + 0); // 이삼함.
+// console.log(2 ** 53 + 1); // 이상함.
+
+// console.log(4864654564644654456446545564654268n); // n붙이면 bigInt로 인식.
+// console.log(BigInt(4864654564644654456446545564654268));
+
+// // BigInt Operations
+// console.log(10000n + 10000n);
+// console.log(849848949489446554646546787n * 100000000n);
+
+// // console.log(Math.sqrt(16n)); // doesn't work
+
+// const huge = 648646465445454346464n;
+// const num = 23;
+// // console.log(huge * num); // occur error! bigInt 와 다른타입의 계산 불가.
+// console.log(huge * BigInt(num));
+
+// // Exceptions
+// console.log(20n > 15);
+// console.log(20n === 20); // === 은 자동형변환을 안해줌.
+// console.log(typeof 20n);
+// console.log(20n == 20); // 이건 true
+
+// console.log(huge + ' is REALLY big!!!');
+
+// // Divisions
+// console.log(10n / 3n); // 가장 가까운 bigInt를 return
+// console.log(10 / 3);
+
+// // Create a date
+// const now = new Date();
+// console.log(now);
+
+// console.log(new Date('Aug 02 2020 18:05:41'));
+// console.log(new Date('December 24, 2015'));
+// console.log(new Date('18:00:00')); // Doesn't work
+// console.log(new Date(account1.movementsDates[0]));
+// console.log(new Date(2037, 10, 19, 15, 23, 5)); // month -> zero based (10이 11월)
+// console.log(new Date(2037, 10, 31, 15, 23, 5)); // Auto correct to next date.(12/1)
+
+// console.log(new Date(0));
+// console.log(new Date(3 * 24 * 60 * 60 * 1000)); // 3 days. calculate timestamp.
+
+// // Working with dates
+// const future = new Date(2037, 10, 19, 15, 23);
+// console.log(future);
+// console.log(future.getFullYear()); // 연도를 얻을 땐, 무조건 이걸 쓸것.
+// console.log(future.getMonth());
+// console.log(future.getDate());
+// console.log(future.getDay());
+// console.log(future.getHours());
+// console.log(future.getMinutes());
+// console.log(future.getSeconds());
+// console.log(future.toISOString()); // 표준 시간 string으로 표기.
+
+// console.log(future.getTime());
+// console.log(new Date(2142224580000));
+
+// console.log(Date.now()); // 현재의 timestamp 얻기.
+
+// future.setFullYear(2040);
+// console.log(future);
+
+// const future = new Date(2037, 10, 19, 15, 23, 59);
+// console.log(future);
+// console.log(+future);
+// console.log(Number(future));
+
+const num = 2884764.23;
+
+const options = {
+  // style: 'unit',
+  // style: 'percent',
+  style: 'currency',
+  // unit: 'mile-per-hour',
+  unit: 'celsius',
+  currency: 'EUR',
+  // useGrouping: false,
+};
+
+console.log('US:      ', new Intl.NumberFormat('en-US', options).format(num));
+console.log('Germanys:', new Intl.NumberFormat('de-DE', options).format(num));
+console.log('Syria:   ', new Intl.NumberFormat('ar-SY', options).format(num));
+
+console.log(
+  navigator.language,
+  new Intl.NumberFormat(navigator.language).format(num)
+);
