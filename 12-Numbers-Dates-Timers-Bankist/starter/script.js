@@ -86,7 +86,7 @@ const formatMovement = function (date, locale) {
     Math.round(Math.abs((date2 - date1) / (1000 * 60 * 60 * 24))); // milliseconds, minuate, hours, days
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
+  // console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
@@ -185,14 +185,43 @@ const updateUI = function (acc) {
   calcDisplaySummary(acc);
 };
 
+const startLogoutTimer = function () {
+  const tick = function () {
+    const min = Math.trunc(time / 60)
+      .toString()
+      .padStart(2, '0');
+    const sec = (time % 60).toString().padStart(2, '0');
+
+    // In each call, print the remaining time to UI
+    labelTimer.textContent = `${min}:${sec}`;
+
+    // When 0 seconds, stop timer and log out user
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0;
+    }
+
+    // Decrese 1s
+    time--;
+  };
+  // Set time to 5 minutes
+  let time = 300;
+
+  // Call the timer every seconds
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 ///////////////////////////////////////
 // Event handlers
-let currentAccount;
+let currentAccount, timer;
 
-// FAKE ALWAYS LOOGED IN
-currentAccount = account1;
-updateUI(currentAccount);
-containerApp.style.opacity = 100;
+// // FAKE ALWAYS LOOGED IN
+// currentAccount = account1;
+// updateUI(currentAccount);
+// containerApp.style.opacity = 100;
 
 // // Experimenting API
 // const now = new Date();
@@ -250,6 +279,9 @@ btnLogin.addEventListener('click', function (e) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+    // Timer
+    if (timer) clearInterval(timer);
+    timer = startLogoutTimer();
     // Update UI
     updateUI(currentAccount);
   }
@@ -279,6 +311,10 @@ btnTransfer.addEventListener('click', function (e) {
 
     // Update UI
     updateUI(currentAccount);
+
+    // Reset the timer
+    clearInterval(timer);
+    timer = startLogoutTimer();
   }
 });
 
@@ -288,14 +324,20 @@ btnLoan.addEventListener('click', function (e) {
   const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // Add movement
-    currentAccount.movements.push(amount);
+    setTimeout(function () {
+      // Add movement
+      currentAccount.movements.push(amount);
 
-    // Add loan date
-    currentAccount.movementsDates.push(new Date().toISOString());
+      // Add loan date
+      currentAccount.movementsDates.push(new Date().toISOString());
 
-    // Update UI
-    updateUI(currentAccount);
+      // Update UI
+      updateUI(currentAccount);
+
+      // Reset timer
+      clearInterval(timer);
+      timer = startLogoutTimer();
+    }, 2000);
   }
   inputLoanAmount.value = '';
 });
@@ -523,23 +565,43 @@ btnSort.addEventListener('click', function (e) {
 // console.log(+future);
 // console.log(Number(future));
 
-const num = 2884764.23;
+// const num = 2884764.23;
 
-const options = {
-  // style: 'unit',
-  // style: 'percent',
-  style: 'currency',
-  // unit: 'mile-per-hour',
-  unit: 'celsius',
-  currency: 'EUR',
-  // useGrouping: false,
-};
+// const options = {
+//   // style: 'unit',
+//   // style: 'percent',
+//   style: 'currency',
+//   // unit: 'mile-per-hour',
+//   unit: 'celsius',
+//   currency: 'EUR',
+//   // useGrouping: false,
+// };
 
-console.log('US:      ', new Intl.NumberFormat('en-US', options).format(num));
-console.log('Germanys:', new Intl.NumberFormat('de-DE', options).format(num));
-console.log('Syria:   ', new Intl.NumberFormat('ar-SY', options).format(num));
+// console.log('US:      ', new Intl.NumberFormat('en-US', options).format(num));
+// console.log('Germanys:', new Intl.NumberFormat('de-DE', options).format(num));
+// console.log('Syria:   ', new Intl.NumberFormat('ar-SY', options).format(num));
 
-console.log(
-  navigator.language,
-  new Intl.NumberFormat(navigator.language).format(num)
-);
+// console.log(
+//   navigator.language,
+//   new Intl.NumberFormat(navigator.language).format(num)
+// );
+
+// // setTimeout
+// const ingredients = ['olives', 'spinach'];
+// const pizzaTimer = setTimeout(
+//   (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2}`),
+//   3000,
+//   ...ingredients
+// );
+// console.log('Waiting...');
+
+// if (ingredients.includes('spinach')) clearTimeout(pizzaTimer); // spanich 가 들어가있으면 타이머 취소!
+
+// // setInterval // 매 시간마다 실행됨.
+// setInterval(function () {
+//   const now = new Date();
+//   const hour = now.getHours();
+//   const min = now.getMinutes();
+//   const sec = now.getSeconds();
+//   console.log(`${hour}:${min}:${sec}`);
+// }, 1000);
