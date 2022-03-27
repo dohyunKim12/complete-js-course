@@ -121,3 +121,37 @@ logo.classList.contains('c', 'j'); // Not includes
 // logo.className = 'Dohyun';
 
 console.log(logo.classList);
+
+const btnScrollTo = document.querySelector('.btn--scroll-to');
+const section1 = document.querySelector('#section--1');
+
+btnScrollTo.addEventListener('click', function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  console.log(s1coords);
+
+  console.log(e.target.getBoundingClientRect()); // 이 때의 x, y 값은 현재 내가 보고있는 창(viewPort)를 기반으로 함.
+  // 이 말인 즉슨, 현재 스크롤 위치도 조정할 수 있다는 뜻!
+
+  console.log('Current scroll (X/Y)', window.pageXOffset, window.pageYOffset);
+
+  console.log(
+    'height/width viewport',
+    document.documentElement.clientHeight,
+    document.documentElement.clientWidth
+  );
+
+  // Scrolling (3 ways)
+  // window.scrollTo(//left position, //Top position);
+  // window.scrollTo(
+  //   s1coords.left + window.pageXOffset, // left와 top을 이렇게 계산한다는 것을 반드시 기억할것!!
+  //   s1coords.top + window.pageYOffset
+  // );
+
+  // window.scrollTo({
+  //   left: s1coords.left + window.pageXOffset,
+  //   top: s1coords.top + window.pageYOffset,
+  //   behavior: 'smooth',
+  // });
+
+  section1.scrollIntoView({ behavior: 'smooth' }); // 제일 간편한 방식.
+});
