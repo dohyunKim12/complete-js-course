@@ -170,3 +170,36 @@ setTimeout(() => h1.removeEventListener('mouseenter', alertH1), 3000); // 3초 �
 // h1.onmouseenter = function (e) { // OLD School..
 //   alert('onmouseenter: Great! You are reading the heading :D');
 // };
+
+// rgb(255,255,255)
+const randomInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+
+const randomColor = () =>
+  `rgb(${randomInt(0, 255)},${randomInt(0, 255)},${randomInt(0, 255)})`;
+
+console.log(randomColor());
+
+// Event handling -> Bubbling phase 가 default임. (Not capturing phase. capturing phase시 third parameter를 true로..)
+document.querySelector('.nav__link').addEventListener('click', function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log('LINK', e.target, e.currentTarget); //Target == Where the click happend
+  console.log(e.currentTarget === this);
+
+  // Stop propagation
+  // e.stopPropagation(); // event bubbling 현상을 제거. (parent element까지 가지 않는다.)
+  // But not good idea.
+});
+document.querySelector('.nav__links').addEventListener('click', function (e) {
+  this.style.backgroundColor = randomColor();
+  console.log('CONTAINER', e.target, e.currentTarget); //Target ==  Where the click happend
+});
+document.querySelector('.nav').addEventListener(
+  'click',
+  function (e) {
+    this.style.backgroundColor = randomColor();
+    console.log('NAV', e.target, e.currentTarget); //Target ==  Where the click happend.
+    // currentTarget == Where the eventHandler attached.
+  }
+  // true // NAV 가 제일 첫번째로 찍힘. (default == false. true시 capturing phase.)
+);
