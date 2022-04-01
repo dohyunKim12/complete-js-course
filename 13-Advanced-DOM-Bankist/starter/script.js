@@ -39,19 +39,19 @@ document.addEventListener('keydown', function (e) {
 ///////////////////////////////////////
 // Button scrolling
 btnScrollTo.addEventListener('click', function (e) {
-  const s1coords = section1.getBoundingClientRect();
-  console.log(s1coords);
+  // const s1coords = section1.getBoundingClientRect();
+  // console.log(s1coords);
 
-  console.log(e.target.getBoundingClientRect()); // 이 때의 x, y 값은 현재 내가 보고있는 창(viewPort)를 기반으로 함.
-  // 이 말인 즉슨, 현재 스크롤 위치도 조정할 수 있다는 뜻!
+  // console.log(e.target.getBoundingClientRect()); // 이 때의 x, y 값은 현재 내가 보고있는 창(viewPort)를 기반으로 함.
+  // // 이 말인 즉슨, 현재 스크롤 위치도 조정할 수 있다는 뜻!
 
-  console.log('Current scroll (X/Y)', window.pageXOffset, window.pageYOffset);
+  // console.log('Current scroll (X/Y)', window.pageXOffset, window.pageYOffset);
 
-  console.log(
-    'height/width viewport',
-    document.documentElement.clientHeight,
-    document.documentElement.clientWidth
-  );
+  // console.log(
+  //   'height/width viewport',
+  //   document.documentElement.clientHeight,
+  //   document.documentElement.clientWidth
+  // );
 
   // Scrolling (3 ways)
   // window.scrollTo(//left position, //Top position);
@@ -199,7 +199,7 @@ const imgTargets = document.querySelectorAll('img[data-src]');
 
 const loadImg = function (entries, observer) {
   const [entry] = entries;
-  console.log(entry);
+  // console.log(entry);
 
   if (!entry.isIntersecting) return;
 
@@ -469,3 +469,25 @@ slider();
 // [...h1.parentElement.children].forEach(function (el) {
 //   if (el !== h1) el.style.transform = 'scale(0.5)';
 // });
+
+// Lifecycle DOM 3 Events
+document.addEventListener('DOMContentLoaded', function (e) {
+  console.log('HTML parsed and DOM tree built!', e);
+});
+
+window.addEventListener('load', function (e) {
+  console.log('Page fully loaded', e);
+});
+
+// window.addEventListener('beforeunload', function (e) {
+//   // 새로고침 전에 묻기.
+//   e.preventDefault();
+//   console.log(e);
+//   e.returnValue = '';
+// });
+
+// Efficient Script Loading: defer and async
+// REGULAR, ASYNC, DEFER
+// 가장 일반적으로는 body의 끝부분에 script 포함.(REGULAR)
+// 순서가 중요한 page -> DEFER를 사용하는게 best!
+// 3rd party library이지만 순서가 중요치 않으면 async를 써도 좋음.
