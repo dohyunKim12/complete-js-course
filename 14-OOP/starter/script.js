@@ -108,7 +108,126 @@
 // class expression
 // const PersonCl = class {}
 
-// class declaration (Nicer)
+// // class declaration (Nicer)
+// class PersonCl {
+//   constructor(fullName, birthYear) {
+//     this.fullName = fullName;
+//     this.birthYear = birthYear;
+//   }
+
+//   // Methods will be addedd to .prototype protperty
+//   calcAge() {
+//     console.log(2037 - this.birthYear);
+//   }
+//   greet() {
+//     console.log(`Hey ${this.fullName}!`);
+//   }
+//   get age() {
+//     return 2037 - this.birthYear;
+//   }
+
+//   // Set a property that already exists
+//   set fullName(name) {
+//     if (name.includes(' ')) this._fullName = name;
+//     else alert('err! no full name');
+//   }
+//   get fullName() {
+//     return this._fullName;
+//   }
+// }
+
+// const jessica = new PersonCl('Jessica Davis', 1996);
+// console.log(jessica);
+// jessica.calcAge();
+// console.log(jessica.age);
+
+// console.log(jessica.__proto__ === PersonCl.prototype);
+
+// jessica.greet();
+
+// // 1. Calsses are NOT hoisted
+// // 2. Classes are first-class citizens (pass them into functions, return them from functions)
+// // 3. Classes are executed in strict mode
+
+// const walter = new PersonCl('Walter White', 1965);
+
+// // Setters & Getters
+
+// const account = {
+//   owner: 'dohyun',
+//   movements: [200, 530, 120, 300],
+
+//   get latest() {
+//     return this.movements.slice(-1).pop();
+//   },
+//   set latest(mov) {
+//     this.movements.push(mov);
+//   },
+// };
+
+// account.latest = 234; // call setter
+// console.log(account.latest); // call getter
+
+// Object.create
+// const PersonProto = {
+//   calcAge() {
+//     console.log(2037 - this.birthYear);
+//   },
+//   init(firstName, birthYear) {
+//     this.firstName = firstName;
+//     this.birthYear = birthYear;
+//   },
+// };
+
+// const steven = Object.create(PersonProto);
+// steven.name = 'Steven';
+// steven.birthYear = 2002;
+// steven.calcAge();
+
+// console.log(steven.__proto__ === PersonProto);
+
+// const sarah = Object.create(PersonProto);
+// sarah.init('Sarah', 2002);
+// sarah.calcAge();
+
+// // Inheritance Between "Classess": Constructor Functions
+// const Person = function (firstName, birthYear) {
+//   this.firstName = firstName;
+//   this.birthYear = birthYear;
+// };
+
+// Person.prototype.calcAge = function () {
+//   console.log(2037 - this.birthYear);
+// };
+
+// const Student = function (firstName, birthYear, course) {
+//   Person.call(this, firstName, birthYear);
+//   this.course = course;
+// };
+
+// // Linking prototypes
+// Student.prototype = Object.create(Person.prototype);
+
+// Student.prototype.introduce = function () {
+//   console.log(`My name is ${this.firstName} and I study ${this.course}`);
+// };
+
+// const mike = new Student('Mike', 2020, 'Computer Science');
+// console.log(mike);
+// mike.introduce();
+// mike.calcAge();
+
+// console.log(mike.__proto__);
+// console.log(mike.__proto__.__proto__);
+
+// console.log(mike instanceof Student);
+// console.log(mike instanceof Person);
+// console.log(mike instanceof Object);
+
+// Student.prototype.constructor = Student;
+// console.dir(Student.prototype.constructor);
+
+// ES6 Inherit
 class PersonCl {
   constructor(fullName, birthYear) {
     this.fullName = fullName;
@@ -134,36 +253,35 @@ class PersonCl {
   get fullName() {
     return this._fullName;
   }
+  static hey() {
+    console.log(`Hey there ! `);
+  }
 }
 
-const jessica = new PersonCl('Jessica Davis', 1996);
-console.log(jessica);
-jessica.calcAge();
-console.log(jessica.age);
+class StudentCl extends PersonCl {
+  constructor(fullName, birthYear, course) {
+    // PersonCl.call(fullName, birthYear)
+    // Always needs to happen first.
+    super(fullName, birthYear); //위에줄 필요가 없이 이걸 부르면 됨.
+    this.course = course;
+  }
 
-console.log(jessica.__proto__ === PersonCl.prototype);
+  introduce() {
+    console.log(`My name is ${this.fullName} and I study ${this.course}`);
+  }
+  calcAge() {
+    // Method overriding
+    console.log(
+      `I'm ${
+        2037 - this.birthYear
+      } years old, but as a student I feel more like ${
+        2037 - this.birthYear + 10
+      }`
+    );
+  }
+}
 
-jessica.greet();
-
-// 1. Calsses are NOT hoisted
-// 2. Classes are first-class citizens (pass them into functions, return them from functions)
-// 3. Classes are executed in strict mode
-
-const walter = new PersonCl('Walter White', 1965);
-
-// Setters & Getters
-
-const account = {
-  owner: 'dohyun',
-  movements: [200, 530, 120, 300],
-
-  get latest() {
-    return this.movements.slice(-1).pop();
-  },
-  set latest(mov) {
-    this.movements.push(mov);
-  },
-};
-
-account.latest = 234; // call setter
-console.log(account.latest); // call getter
+const martha = new StudentCl('Martha Jones', 2012);
+// const martha = new StudentCl('Martha Jones', 2012, 'Computer Science');
+martha.introduce();
+martha.calcAge();
