@@ -68,3 +68,41 @@ tesla.chargeBattery(90);
 tesla.accelerate();
 tesla.brake();
 myCar3.accelerate();
+
+class EVCl extends CarCl {
+  // Private
+  #charge;
+  // Public
+  constructor(make, speed, charge) {
+    super(make, speed);
+    this.#charge = charge;
+  }
+  accelerate() {
+    this.speed += 20;
+    this.#charge -= 1;
+    console.log(
+      `${this.make} is going at ${this.speed}km/h, with a charge of ${
+        this.#charge
+      }%`
+    );
+    return this;
+  }
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    console.log(`${this.make} is charged to ${this.#charge}`);
+    return this;
+  }
+  brake() {
+    this.speed -= 5;
+    this.#charge += 3;
+    console.log(
+      `${this.make} is going at ${this.speed}km/h, with a charge of ${
+        this.#charge
+      }%`
+    );
+    return this;
+  }
+}
+
+const newCar = new EVCl('Genesis', 150, 50);
+newCar.accelerate().brake().chargeBattery(80);
