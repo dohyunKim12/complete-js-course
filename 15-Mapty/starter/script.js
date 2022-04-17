@@ -146,6 +146,9 @@ class App {
 
     // Hide form + clear input fields
     this._hideForm();
+
+    // Set local storage to all workouts
+    this._setLocalStorage();
   }
 
   _renderWorkoutMarker(workout) {
@@ -180,7 +183,7 @@ class App {
           </div>
           <div class="workout__details">
             <span class="workout__icon">⏱</span>
-            <span class="workout__value">${workout.duration}</an>
+            <span class="workout__value">${workout.duration}</span>
             <span class="workout__unit">min</span>
           </div>
     `;
@@ -242,6 +245,11 @@ class App {
     // leaflet library method
     // Handling clicks on map
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(workout => {
+      // Render workout on map as marker
+      this._renderWorkoutMarker(workout);
+    });
   }
   _showForm(mapE) {
     this.#mapEvent = mapE;
@@ -274,13 +282,35 @@ class App {
       },
     });
 
-    // using the public interface
-    workout.click();
+    // using the Public Interface
+    // workout.click();
   }
 
-  _getLocalStorage() {}
+  _setLocalStorage() {
+    // very simple API from browser given. (Only small data)
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
 
-  _setLocalStorage() {}
+  _getLocalStorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+    // localStorage 사용 시 Prototype chain이 끊어짐!!
+    // No longer object we created.. just Object로 되어버림.
+    // 방법은, data를 parsing해서 받는 것이 아니라, data string을 기반으로 새로운 object를 직접 만들어서 insert. (but not gonna do this in here)
+
+    if (!data) return;
+
+    this.#workouts = data;
+
+    this.#workouts.forEach(workout => {
+      // Render workout on list
+      this._renderWorkout(workout);
+    });
+  }
+
+  reset() {
+    localStorage.removeItem('workouts');
+    location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
+  }
 }
 
 const app = new App();
