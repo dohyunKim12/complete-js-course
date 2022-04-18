@@ -49,10 +49,39 @@ a:visited {
   flex-direction: column;
 }
 
+.sidebar_top {
+  flex-direction: row;
+}
+
 .logo {
   height: 5.2rem;
   align-self: center;
+  margin-left: 13rem;
   margin-bottom: 4rem;
+}
+
+.reset {
+  height: 1.5rem;
+  align-self: center;
+  margin-left: 7rem;
+  margin-bottom: 5rem;
+}
+
+.reset_text {
+  font-size: 10px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 3rem;
+}
+
+.delete {
+  /* width: 50px; */
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: right;
+  grid-column: 4/-1;
+  color: #ffa699;
 }
 
 .workouts {
@@ -85,9 +114,11 @@ a:visited {
 }
 
 .workout__title {
+  /* max-width: 200px; */
   font-size: 1.7rem;
   font-weight: 600;
-  grid-column: 1 / -1;
+  grid-column: 1 / 4;
+  float: left;
 }
 
 .workout__details {

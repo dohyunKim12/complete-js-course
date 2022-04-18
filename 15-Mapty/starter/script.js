@@ -65,6 +65,8 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const reset = document.querySelector('.reset');
+let markers;
 
 class App {
   #map;
@@ -83,6 +85,8 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
+    containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
+    reset.addEventListener('click', this._reset);
   }
 
   _toggleElevationField() {
@@ -152,8 +156,9 @@ class App {
   }
 
   _renderWorkoutMarker(workout) {
-    L.marker(workout.coords)
-      .addTo(this.#map)
+    markers = L.layerGroup().addTo(this.#map);
+    const marker_id = L.marker(workout.coords)
+      .addTo(markers)
       .bindPopup(
         L.popup({
           maxWidth: 250,
@@ -167,6 +172,8 @@ class App {
         `${workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'} ${workout.description}`
       )
       .openPopup();
+    // markers.removeLayer(marker_id._leaflet_id);
+    workout.marker = marker_id._leaflet_id;
   }
 
   _renderWorkout(workout) {
@@ -174,6 +181,7 @@ class App {
       workout.id
     }">
           <h2 class="workout__title">${workout.description}</h2>
+          <span class="delete">Delete</span>
           <div class="workout__details">
             <span class="workout__icon">${
               workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'
@@ -284,6 +292,11 @@ class App {
 
     // using the Public Interface
     // workout.click();
+
+    // hide form (with animation)
+    // prettier-ignore
+    inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
+    form.classList.add('hidden');
   }
 
   _setLocalStorage() {
@@ -307,10 +320,52 @@ class App {
     });
   }
 
-  reset() {
+  _reset() {
     localStorage.removeItem('workouts');
     location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
+  }
+
+  _deleteWorkout(e) {
+    const deleteEl = e.target.closest('.delete');
+
+    if (!deleteEl) return;
+
+    const workoutEl = e.target.closest('.workout');
+
+    const workout = this.#workouts.find(
+      work => work.id === workoutEl.dataset.id
+    );
+    // Add new object to workout array
+    this.#workouts.pop(workout);
+
+    this._setLocalStorage();
+    // location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
+
+    // Remove marker and from list
+    markers.removeLayer(workout.marker);
   }
 }
 
 const app = new App();
+
+// ADDITIONAL FEATURE IDEAS (CHALLENGES)
+// 1. Ability to edit a workout
+// 2. Ability to delete a workout
+// 3. Ability to delete all workouts
+// 4. Ability to sort workouts by a certain field (ex- by distance) - inpiration from bankist app
+// 5. Re-build Running and Cycling objects coming from LocalStorage.
+// 6. More realistic error and confirmation messages
+
+// Harder things
+// 7. Ability to position the map to show all workouts (shows all the workouts on the map at once.) - leaflet library
+// 8. Ability to draw lines and shapes instead of just points
+
+// Other two things would can be Implement after study next section.
+// 9. Geocode location from coordinates ("Run in Gangnam, Seoul Korea") - use third party API
+// 10. Display weather data for workout time and place
+
+///////////////////////////////////////////////////////////////
+// window.onload = function () {
+//   const deleteWorkout = document.querySelector('.delete');
+//   deleteWorkout.addEventListener('click', app._deleteWorkout);
+// };
