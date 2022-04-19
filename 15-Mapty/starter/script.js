@@ -65,7 +65,9 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
-const reset = document.querySelector('.reset');
+const resetBtn = document.querySelector('.reset');
+const sortBtn = document.querySelector('.sort');
+const workoutsContainer = document.querySelector('.workouts_container');
 let markers;
 let editable = false;
 
@@ -74,6 +76,7 @@ class App {
   #mapEvent;
   #mapZoomLevel = 13;
   #workouts = [];
+  #sorted = false;
 
   constructor() {
     // Get User's Position
@@ -88,7 +91,8 @@ class App {
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
     containerWorkouts.addEventListener('click', this._editWorkout.bind(this));
-    reset.addEventListener('click', this._reset);
+    resetBtn.addEventListener('click', this._reset);
+    sortBtn.addEventListener('click', this._sort.bind(this));
   }
 
   _toggleElevationField() {
@@ -160,7 +164,7 @@ class App {
     this._renderWorkoutMarker(workout);
 
     // Render workout on list
-    this._renderWorkout(workout);
+    this._displayWorkout();
 
     // Hide form + clear input fields
     this._hideForm();
@@ -189,10 +193,19 @@ class App {
     workout.marker = marker_id._leaflet_id;
   }
 
-  _renderWorkout(workout) {
-    let html = `<li class="workout workout--${workout.type}" data-id="${
-      workout.id
-    }">
+  _displayWorkout(sort = false) {
+    workoutsContainer.innerHTML = '';
+    // form과 겹치는 문제 때문에, workoutsContainer를 따로 div로 정의하고 사용했다는 점!!
+    // 맨 끝부분 insertAdjacentHTMl - afterend 에서 문제가 생겼었음. --> workoutsContainer를 따로 만들고 afterbegin으로 해결.
+
+    const workouts = sort
+      ? this.#workouts.slice().sort((a, b) => a.distance - b.distance)
+      : this.#workouts;
+
+    workouts.forEach(function (workout) {
+      let html = `<li class="workout workout--${workout.type}" data-id="${
+        workout.id
+      }">
           <h2 class="workout__title">${workout.description}</h2>
           <div class="editDelete_div">
             <span class="edit">Edit</span>
@@ -212,8 +225,8 @@ class App {
           </div>
     `;
 
-    if (workout.type === 'running')
-      html += `
+      if (workout.type === 'running')
+        html += `
          <div class="workout__details">
            <span class="workout__icon">⚡️</span>
            <span class="workout__value">${workout.pace.toFixed(1)}</span>
@@ -226,8 +239,8 @@ class App {
          </div>
        </li>
      `;
-    if (workout.type === 'cycling')
-      html += `
+      if (workout.type === 'cycling')
+        html += `
          <div class="workout__details">
            <span class="workout__icon">⚡️</span>
            <span class="workout__value">${workout.speed.toFixed(1)}</span>
@@ -240,7 +253,8 @@ class App {
          </div>
        </li>
       `;
-    form.insertAdjacentHTML('afterend', html);
+      workoutsContainer.insertAdjacentHTML('afterbegin', html);
+    });
   }
 
   _getPosition() {
@@ -332,15 +346,17 @@ class App {
 
     this.#workouts = data;
 
-    this.#workouts.forEach(workout => {
-      // Render workout on list
-      this._renderWorkout(workout);
-    });
+    this._displayWorkout();
   }
 
   _reset() {
     localStorage.removeItem('workouts');
     location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
+  }
+
+  _sort() {
+    this._displayWorkout(!this.#sorted);
+    this.#sorted = !this.sorted;
   }
 
   _editWorkout(e) {

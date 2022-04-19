@@ -125,6 +125,19 @@ a:visited {
   color: #ffa699;
 }
 
+.distance {
+  height: 3rem;
+  margin-left: 10px;
+}
+
+.sortDiv {
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 12;
+  text-align: right;
+  margin-bottom: 20px;
+}
+
 .workouts {
   list-style: none;
   height: 77vh;
