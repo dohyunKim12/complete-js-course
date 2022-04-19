@@ -50,7 +50,7 @@ class Cycling extends Workout {
   }
   calcSpeed() {
     // km /h
-    this.speed = this.distance / this.duration / 60;
+    this.speed = this.distance / (this.duration / 60);
     return this.speed;
   }
 }
@@ -67,6 +67,7 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const reset = document.querySelector('.reset');
 let markers;
+let editable = false;
 
 class App {
   #map;
@@ -86,6 +87,7 @@ class App {
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
+    containerWorkouts.addEventListener('click', this._editWorkout.bind(this));
     reset.addEventListener('click', this._reset);
   }
 
@@ -95,17 +97,29 @@ class App {
   }
 
   _newWorkout(e) {
+    e.preventDefault();
+
     // Can simply add some small helper funtions
     const validInputs = (...inputs) =>
       inputs.every(inp => Number.isFinite(inp));
     const allPositive = (...inputs) => inputs.every(inp => inp > 0);
 
-    e.preventDefault();
-
     // Get data from form
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
+    let exval;
+
+    // If worktout Exist, Go to update
+    if (type === 'running') {
+      exval = +inputCadence.value;
+    }
+    if (type === 'cycling') {
+      exval = +inputElevation.value;
+    }
+
+    if (editable) return this._editWorkoutData(type, distance, duration, exval);
+
     const { lat, lng } = this.#mapEvent.latlng;
     const coords = [lat, lng];
     let workout;
@@ -156,7 +170,6 @@ class App {
   }
 
   _renderWorkoutMarker(workout) {
-    markers = L.layerGroup().addTo(this.#map);
     const marker_id = L.marker(workout.coords)
       .addTo(markers)
       .bindPopup(
@@ -181,7 +194,10 @@ class App {
       workout.id
     }">
           <h2 class="workout__title">${workout.description}</h2>
-          <span class="delete">Delete</span>
+          <div class="editDelete_div">
+            <span class="edit">Edit</span>
+            <span class="delete">Delete</span>
+          </div>
           <div class="workout__details">
             <span class="workout__icon">${
               workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'
@@ -254,12 +270,14 @@ class App {
     // Handling clicks on map
     this.#map.on('click', this._showForm.bind(this));
 
+    markers = L.layerGroup().addTo(this.#map);
+
     this.#workouts.forEach(workout => {
       // Render workout on map as marker
       this._renderWorkoutMarker(workout);
     });
   }
-  _showForm(mapE) {
+  _showForm(mapE = 0) {
     this.#mapEvent = mapE;
     form.classList.remove('hidden');
     inputDistance.focus();
@@ -325,6 +343,73 @@ class App {
     location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
   }
 
+  _editWorkout(e) {
+    const editEl = e.target.closest('.edit');
+
+    if (!editEl) return;
+
+    const workoutEl = e.target.closest('.workout');
+
+    const workout = this.#workouts.find(
+      work => work.id === workoutEl.dataset.id
+    );
+
+    workout.editing = true;
+    editable = true;
+    this._showForm();
+
+    const selectVal = document.getElementById('select');
+
+    selectVal.disabled = true;
+
+    if (workout.type === 'running' && selectVal.value === 'cycling') {
+      document.getElementById('select').value = 'running';
+      this._toggleElevationField();
+    }
+
+    if (workout.type === 'cycling' && selectVal.value === 'running') {
+      document.getElementById('select').value = 'cycling';
+      this._toggleElevationField();
+    }
+  }
+
+  _editWorkoutData(type, dis, dur, exval) {
+    console.log('editing');
+
+    const workout = this.#workouts.find(work => work.editing === true);
+    const workoutEl = document.querySelector(`[data-id="${workout.id}"]`);
+    let thirdParam;
+
+    // edit object
+    workout.type = type;
+    workout.distance = dis;
+    workout.duration = dur;
+    console.log('workout:  ', workout);
+    if (type === 'running') {
+      workout.cadence = exval;
+      workout.calcPace();
+      thirdParam = workout.pace;
+    }
+    if (type === 'cycling') {
+      workout.elevation = exval;
+      workout.calcSpeed();
+      thirdParam = workout.speed;
+    }
+
+    // edit html
+    workoutEl.children[2].children[1].innerHTML = dis;
+    workoutEl.children[3].children[1].innerHTML = dur;
+    workoutEl.children[4].children[1].innerHTML = thirdParam.toFixed(1);
+    workoutEl.children[5].children[1].innerHTML = exval;
+
+    // restore object & store localStorage & hide form
+    workout.editing = false;
+    editable = false;
+    document.getElementById('select').disabled = false;
+    this._setLocalStorage();
+    this._hideForm();
+  }
+
   _deleteWorkout(e) {
     const deleteEl = e.target.closest('.delete');
 
@@ -335,14 +420,18 @@ class App {
     const workout = this.#workouts.find(
       work => work.id === workoutEl.dataset.id
     );
-    // Add new object to workout array
-    this.#workouts.pop(workout);
+
+    // Remove object from workouts array
+    // this.#workouts.pop(idx);
+    const idx = this.#workouts.indexOf(workout);
+    this.#workouts.splice(idx, 1);
 
     this._setLocalStorage();
     // location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
 
     // Remove marker and from list
     markers.removeLayer(workout.marker);
+    workoutEl.style.display = 'none';
   }
 }
 

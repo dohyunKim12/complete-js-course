@@ -40,7 +40,7 @@
         <form class="form hidden">
           <div class="form__row">
             <label class="form__label">Type</label>
-            <select class="form__input form__input--type">
+            <select id="select" class="form__input form__input--type">
               <option value="running">Running</option>
               <option value="cycling">Cycling</option>
             </select>
@@ -73,9 +73,13 @@
           <button class="form__btn">OK</button>
         </form>
 
-        <!-- <li class="workout workout--running" data-id="1234567890">
-          <h2 class="workout__title">Running on April 14</h2>
-          <span class="delete">Delete</span>
+        <!--<li class="workout workout--running" data-id="1234567890">
+          <h2 class="workout__title">Running on April 19</h2>
+          <div class="editDelete_div">
+            <span class="edit">Edit</span>
+            <span class="delete">Delete</span>
+          </div>
+
           <div class="workout__details">
             <span class="workout__icon">🏃‍♂️</span>
             <span class="workout__value">5.2</span>
@@ -134,7 +138,6 @@
         as your own.
       </p>
     </div>
-
     <div id="map"></div>
   </body>
 </html>
