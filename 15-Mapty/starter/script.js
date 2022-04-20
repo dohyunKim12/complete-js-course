@@ -4,7 +4,6 @@ class Workout {
   date = new Date();
   // To create id, use library in real app
   id = (Date.now() + '').slice(-10);
-  clicks = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords; // [lat, lng]
@@ -19,9 +18,6 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
-  }
-  click() {
-    this.clicks++;
   }
 }
 
@@ -322,9 +318,6 @@ class App {
       },
     });
 
-    // using the Public Interface
-    // workout.click();
-
     // hide form (with animation)
     // prettier-ignore
     inputDistance.value = inputDuration.value = inputCadence.value = inputElevation.value = '';
@@ -337,15 +330,32 @@ class App {
   }
 
   _getLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('workouts'));
+    this.#workouts.length = 0;
+    const dataAry = JSON.parse(localStorage.getItem('workouts'));
     // localStorage 사용 시 Prototype chain이 끊어짐!!
     // No longer object we created.. just Object로 되어버림.
     // 방법은, data를 parsing해서 받는 것이 아니라, data string을 기반으로 새로운 object를 직접 만들어서 insert. (but not gonna do this in here)
 
-    if (!data) return;
+    if (!dataAry) return;
 
-    this.#workouts = data;
+    // this.#workouts = dataAry;
 
+    // Create new Object instead just do this (this.#workouts = dataAry) -> shallow copy
+    let workout;
+    dataAry.forEach(data => {
+      workout = data.pace
+        ? new Running(data.coords, data.distance, data.duration, data.cadence)
+        : new Cycling(
+            data.coords,
+            data.distance,
+            data.duration,
+            data.elevation
+          );
+      workout.id = data.id;
+      this.#workouts.push(workout);
+    });
+
+    // Display workouts in list
     this._displayWorkout();
   }
 
@@ -356,7 +366,7 @@ class App {
 
   _sort() {
     this._displayWorkout(!this.#sorted);
-    this.#sorted = !this.sorted;
+    this.#sorted = !this.#sorted;
   }
 
   _editWorkout(e) {
@@ -374,15 +384,13 @@ class App {
     editable = true;
     this._showForm();
 
+    // Block to running -> cycling or cycling -> running
     const selectVal = document.getElementById('select');
-
     selectVal.disabled = true;
-
     if (workout.type === 'running' && selectVal.value === 'cycling') {
       document.getElementById('select').value = 'running';
       this._toggleElevationField();
     }
-
     if (workout.type === 'cycling' && selectVal.value === 'running') {
       document.getElementById('select').value = 'cycling';
       this._toggleElevationField();
@@ -443,7 +451,6 @@ class App {
     this.#workouts.splice(idx, 1);
 
     this._setLocalStorage();
-    // location.reload(); // location은 big object임. 이걸 이용해서 reload를 할 수 있음.
 
     // Remove marker and from list
     markers.removeLayer(workout.marker);
