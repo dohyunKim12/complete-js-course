@@ -61,8 +61,11 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
-const resetBtn = document.querySelector('.reset');
-const sortBtn = document.querySelector('.sort');
+const btnReset = document.querySelector('.reset');
+const btnSort = document.querySelector('.sort');
+const modal = document.querySelector('.modal');
+const overlay = document.querySelector('.overlay');
+const btnCloseModal = document.querySelector('.btn--close-modal');
 const workoutsContainer = document.querySelector('.workouts_container');
 let markers;
 let editable = false;
@@ -87,8 +90,9 @@ class App {
     containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
     containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
     containerWorkouts.addEventListener('click', this._editWorkout.bind(this));
-    resetBtn.addEventListener('click', this._reset);
-    sortBtn.addEventListener('click', this._sort.bind(this));
+    btnReset.addEventListener('click', this._reset);
+    btnSort.addEventListener('click', this._sort.bind(this));
+    btnCloseModal.addEventListener('click', this._closeModal);
   }
 
   _toggleElevationField() {
@@ -108,51 +112,35 @@ class App {
     const type = inputType.value;
     const distance = +inputDistance.value;
     const duration = +inputDuration.value;
-    let exval;
+    let param4;
 
     // If worktout Exist, Go to update
     if (type === 'running') {
-      exval = +inputCadence.value;
+      param4 = +inputCadence.value;
     }
     if (type === 'cycling') {
-      exval = +inputElevation.value;
+      param4 = +inputElevation.value;
     }
+    if (
+      // !Number.isFinite(distance) ||
+      // !Number.isFinite(duration) ||
+      // !Number.isFinite(cadence)
+      !validInputs(distance, duration, param4) ||
+      !allPositive(distance, duration, param4)
+    )
+      return this._showAlertModal();
 
-    if (editable) return this._editWorkoutData(type, distance, duration, exval);
+    if (editable)
+      return this._editWorkoutData(type, distance, duration, param4);
 
     const { lat, lng } = this.#mapEvent.latlng;
     const coords = [lat, lng];
     let workout;
 
-    // If workout running, create running object
-    if (type === 'running') {
-      const cadance = +inputCadence.value;
-      // Check if data is valid
-      if (
-        // !Number.isFinite(distance) ||
-        // !Number.isFinite(duration) ||
-        // !Number.isFinite(cadance)
-        !validInputs(distance, duration, cadance) ||
-        !allPositive(distance, duration, cadance)
-      )
-        return alert('Inputs have to be positive numbers!');
-
-      workout = new Running(coords, distance, duration, cadance);
-    }
-
-    // If workout cycling, create cycling object
-    if (type === 'cycling') {
-      const elevation = +inputElevation.value;
-
-      if (
-        !validInputs(distance, duration, elevation) ||
-        !allPositive(distance, duration) // elevation can be negative
-      )
-        return alert('Inputs have to be positive numbers!');
-
-      workout = new Cycling(coords, distance, duration, elevation);
-    }
-
+    workout =
+      type === 'running'
+        ? new Running(coords, distance, duration, param4)
+        : new Cycling(coords, distance, duration, param4);
     // Add new object to workout array
     this.#workouts.push(workout);
 
@@ -397,7 +385,7 @@ class App {
     }
   }
 
-  _editWorkoutData(type, dis, dur, exval) {
+  _editWorkoutData(type, dis, dur, param4) {
     console.log('editing');
 
     const workout = this.#workouts.find(work => work.editing === true);
@@ -410,12 +398,12 @@ class App {
     workout.duration = dur;
     console.log('workout:  ', workout);
     if (type === 'running') {
-      workout.cadence = exval;
+      workout.cadence = param4;
       workout.calcPace();
       thirdParam = workout.pace;
     }
     if (type === 'cycling') {
-      workout.elevation = exval;
+      workout.elevation = param4;
       workout.calcSpeed();
       thirdParam = workout.speed;
     }
@@ -424,7 +412,7 @@ class App {
     workoutEl.children[2].children[1].innerHTML = dis;
     workoutEl.children[3].children[1].innerHTML = dur;
     workoutEl.children[4].children[1].innerHTML = thirdParam.toFixed(1);
-    workoutEl.children[5].children[1].innerHTML = exval;
+    workoutEl.children[5].children[1].innerHTML = param4;
 
     // restore object & store localStorage & hide form
     workout.editing = false;
@@ -455,6 +443,16 @@ class App {
     // Remove marker and from list
     markers.removeLayer(workout.marker);
     workoutEl.style.display = 'none';
+  }
+
+  _showAlertModal() {
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+  }
+
+  _closeModal() {
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
   }
 }
 

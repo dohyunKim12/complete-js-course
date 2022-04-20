@@ -69,9 +69,12 @@ a:visited {
 
 .reset_text {
   font-size: 10px;
+  font-weight: bold;
   display: inline-block;
   vertical-align: top;
   margin-top: 3rem;
+  user-select: none;
+  color: var(--color-light--2);
 }
 
 .hidden {
@@ -85,11 +88,52 @@ a:visited {
   left: 50%;
   transform: translate(-50%, -50%);
   max-width: 60rem;
-  background-color: #f3f3f3;
-  padding: 5rem 6rem;
+  background-color: var(--color-light--2);
+  padding: 3rem 4rem;
   box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.3);
   z-index: 1000;
   transition: all 0.5s;
+
+  border-radius: 13px;
+  border-left: 5px solid #ff3337;
+}
+
+.modal__header {
+  color: black;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.btn--close-modal {
+  font-family: inherit;
+  color: #444;
+  position: absolute;
+  top: 0.5rem;
+  right: 2rem;
+  font-size: 4rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.highlight {
+  position: relative;
+}
+
+.highlight::after {
+  display: block;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  opacity: 0.7;
+  transform: scale(1.07, 1.05) skewX(-15deg);
+  /* background-image: linear-gradient(to top left, #39b385, #9be15d); */
+  background-image: linear-gradient(to top left, #8454f5, #b2adf1);
 }
 
 .overlay {
@@ -126,8 +170,21 @@ a:visited {
 }
 
 .distance {
+  position: relative;
+  top: 10px;
   height: 3rem;
-  margin-left: 10px;
+  margin-left: 5px;
+  align-self: center;
+}
+
+.sort {
+  display: inline-block;
+  padding: 3px;
+  border-radius: 5px;
+  color: #adaab3;
+  background-color: var(--color-dark--2);
+  user-select: none;
+  color: var(--color-light--2);
 }
 
 .sortDiv {
@@ -135,6 +192,7 @@ a:visited {
   font-weight: bold;
   font-size: 12;
   text-align: right;
+  margin-top: 20px;
   margin-bottom: 20px;
 }
 
@@ -279,6 +337,7 @@ a:visited {
   flex: 1;
   height: 100%;
   background-color: var(--color-light--1);
+  z-index: 10;
 }
 
 /* Popup width is defined in JS using options */
