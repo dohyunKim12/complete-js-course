@@ -66,6 +66,7 @@ const btnSort = document.querySelector('.sort');
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const btnCloseModal = document.querySelector('.btn--close-modal');
+const btnResize = document.querySelector('.resize');
 const workoutsContainer = document.querySelector('.workouts_container');
 let markers;
 let editable = false;
@@ -93,6 +94,7 @@ class App {
     btnReset.addEventListener('click', this._reset);
     btnSort.addEventListener('click', this._sort.bind(this));
     btnCloseModal.addEventListener('click', this._closeModal);
+    btnResize.addEventListener('click', this._resize.bind(this));
   }
 
   _toggleElevationField() {
@@ -274,6 +276,16 @@ class App {
       // Render workout on map as marker
       this._renderWorkoutMarker(workout);
     });
+
+    // Show current position
+    this.#map.setView(coords, this.#mapZoomLevel);
+    let myIcon = L.icon({
+      iconUrl: 'myIcon.png',
+      iconSize: [10, 10],
+    });
+    console.log(coords);
+
+    L.marker(coords, { icon: myIcon }).addTo(this.#map);
   }
   _showForm(mapE = 0) {
     this.#mapEvent = mapE;
@@ -453,6 +465,15 @@ class App {
   _closeModal() {
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
+  }
+
+  _resize() {
+    console.log('resize clicked!');
+    const latlngs = [];
+    this.#workouts.forEach(workout => {
+      latlngs.push(workout.coords);
+    });
+    this.#map.fitBounds(L.latLngBounds(latlngs));
   }
 }
 
