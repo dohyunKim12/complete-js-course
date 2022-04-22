@@ -500,8 +500,3 @@ const app = new App();
 //   const deleteWorkout = document.querySelector('.delete');
 //   deleteWorkout.addEventListener('click', app._deleteWorkout);
 // };
-
-// build app with parcel
-// 1. create package.json
-// 2. npm i parcel
-// 3. npm run build
