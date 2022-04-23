@@ -76,6 +76,7 @@ class App {
   #mapEvent;
   #mapZoomLevel = 13;
   #workouts = [];
+  #latlngs = [];
   #sorted = false;
 
   constructor() {
@@ -286,6 +287,12 @@ class App {
     console.log(coords);
 
     L.marker(coords, { icon: myIcon }).addTo(this.#map);
+    L.circle(coords, {
+      stroke: false,
+      radius: 700,
+      color: 'orangered',
+      opacity: 0.9,
+    }).addTo(this.#map);
   }
   _showForm(mapE = 0) {
     this.#mapEvent = mapE;
@@ -469,11 +476,11 @@ class App {
 
   _resize() {
     console.log('resize clicked!');
-    const latlngs = [];
     this.#workouts.forEach(workout => {
-      latlngs.push(workout.coords);
+      this.#latlngs.push(workout.coords);
     });
-    this.#map.fitBounds(L.latLngBounds(latlngs));
+    this.#map.fitBounds(L.latLngBounds(this.#latlngs));
+    L.polyline(this.#latlngs, { color: '#Ee262d' }).addTo(this.#map);
   }
 }
 
