@@ -7,6 +7,10 @@ const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 //////////////////////////////////////////////////
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  // countriesContainer.style.opacity = 1;
+};
 
 const renderCountry = function (data, className = '') {
   const html = `
@@ -26,7 +30,7 @@ const renderCountry = function (data, className = '') {
         </article>
    `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1;
 };
 
 const getCountryAndNeighbour = function (country) {
@@ -99,3 +103,104 @@ console.log(request); // fetch는 promise 를 리턴함.
 // 2. Settled (Async task has finished) only settled one
 // 3-1. Fullfilled (Success! The value is now available)
 // 3-2. Rejected (An error happend! The value is now unavailable)
+
+// const getCountryData = function (country) {
+//   // then은 fullfilled state일때 실행됨.
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//     .then(function (response) {
+//       console.log(response);
+//       return response.json(); // all of the resolved value from fetch function.
+//       // 이것을 return 함으로써, 그 뒤에 또 then 메서드를 달아 chaining 할 수 있다.
+//     })
+//     .then(function (data) {
+//       console.log(data);
+//       renderCountry(data[0]);
+//     });
+// };
+// fetch는 promise를 리턴. 그로부터 response를 받는 then 메서드 사용. response를 data화 할 수 있는 json 메서드 사용.
+// then 메서드가 또다시 promise를 return 하기 때문에 이것을 연결하여 또다시 then 메서드 사용.
+
+const getJSON = function (url, errorMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errorMsg} ${response.status}`);
+    return response.json();
+  });
+};
+
+const getCountryData = function (country) {
+  // Country 1
+  getJSON(`https://restcountries.com/v2/name/${country}`, 'Country not found')
+    .then(data => {
+      renderCountry(data[0]);
+      if (!data[0].borders) throw new Error('No neighbour found!');
+
+      const neighbour = data[0].borders[0];
+
+      return getJSON(
+        `https://restcountries.com/v2/alpha/${neighbour}`,
+        'Country not found'
+      );
+    })
+    .then(data => renderCountry(data, 'neighbour'))
+    .catch(err => {
+      console.error(`${err} 🤷‍♂️🤷‍♂️🤷‍♂️ `);
+      renderError(`Something went wrong 🤷‍♂️🤷‍♂️ ${err.message}. Try again!`);
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    });
+};
+
+// look nicer! (callback hell 대신, flat 한 chaining을 통해 해결!)
+// const getCountryData = function (country) {
+//   // Country 1
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//     .then(response => {
+//       console.log(response);
+
+//       if (!response.ok) throw new Error(`Country not found ${response.status}`);
+//       // Immediately reject. go directly catch handler
+
+//       return response.json();
+//     })
+//     .then(data => {
+//       renderCountry(data[0]);
+//       // const neighbour = data[0].borders[0];
+//       const neighbour = 'asdfasdf';
+
+//       if (!neighbour) return;
+
+//       // Country 2
+//       return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+//     })
+//     .then(response => {
+//       response.json();
+//       if (!response.ok) throw new Error(`Country not found ${response.status}`);
+//     })
+//     .then(data => {
+//       renderCountry(data, 'neighbour');
+
+//       const neighbour = data.borders[0];
+//       if (!neighbour) return;
+//       // Country 3
+//       return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+//     })
+//     .then(response => response.json())
+//     .then(data => renderCountry(data, 'neighbour'))
+//     .catch(err => {
+//       console.error(`${err} 🤷‍♂️🤷‍♂️🤷‍♂️ `); // console.error 는 stack trace(추적) 기능 포함.
+//       renderError(`Something went wrong 🤷‍♂️🤷‍♂️ ${err.message}. Try again!`);
+//     }) // catch도 역시 promise를 리턴함.
+//     .finally(() => {
+//       // called always( no matter promise fullfilled or rejected)
+//       // loading spinner 같은 곳에 활용!!
+//       countriesContainer.style.opacity = 1;
+//     });
+// };
+
+btn.addEventListener('click', function () {
+  getCountryData('portugal');
+});
+
+getCountryData('australia');
+// getCountryData('asdasdfasd');
