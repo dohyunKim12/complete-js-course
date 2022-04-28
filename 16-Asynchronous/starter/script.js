@@ -202,5 +202,20 @@ btn.addEventListener('click', function () {
   getCountryData('portugal');
 });
 
-getCountryData('australia');
+// getCountryData('australia');
 // getCountryData('asdasdfasd');
+
+// Event loop practice
+console.log('Test start');
+setTimeout(() => console.log('0 sec timer'), 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+
+Promise.resolve('Resolved promise 2').then(res => {
+  for (let i = 0; i < 100000000; i++) {}
+  console.log(res);
+});
+
+console.log('Test end');
+// 순서 1->4->3->2. 이유는 micro task queue 때문!
+// timmer가 먼저 callback queue에 들어가지만 먼저 실행되는것은 아니다.
+// Promise는 micro-task queue에 들어가고, callback-queue보다 priority를 갖게 된다.
