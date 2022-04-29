@@ -30,7 +30,7 @@ const renderCountry = function (data, className = '') {
         </article>
    `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 const getCountryAndNeighbour = function (country) {
@@ -94,7 +94,7 @@ const getCountryAndNeighbour = function (country) {
 // request.send();
 
 const request = fetch('https://restcountries.com/v2/name/portugal');
-console.log(request); // fetch는 promise 를 리턴함.
+// console.log(request); // fetch는 promise 를 리턴함.
 // promise 는 로또 티켓같은거라고 생각하면 됨. (event handler의 callback 지옥으로부터 벗어나게 해준다.)
 // nested callback 대신 promise를 chaining 할 수 있음.
 
@@ -198,24 +198,120 @@ const getCountryData = function (country) {
 //     });
 // };
 
-btn.addEventListener('click', function () {
-  getCountryData('portugal');
-});
+// btn.addEventListener('click', function () {
+//   getCountryData('portugal');
+// });
 
 // getCountryData('australia');
 // getCountryData('asdasdfasd');
 
 // Event loop practice
-console.log('Test start');
-setTimeout(() => console.log('0 sec timer'), 0);
-Promise.resolve('Resolved promise 1').then(res => console.log(res));
+// console.log('Test start');
+// setTimeout(() => console.log('0 sec timer'), 0);
+// Promise.resolve('Resolved promise 1').then(res => console.log(res));
 
-Promise.resolve('Resolved promise 2').then(res => {
-  for (let i = 0; i < 100000000; i++) {}
-  console.log(res);
-});
+// Promise.resolve('Resolved promise 2').then(res => {
+//   for (let i = 0; i < 100000000; i++) {}
+//   console.log(res);
+// });
 
-console.log('Test end');
+// console.log('Test end');
 // 순서 1->4->3->2. 이유는 micro task queue 때문!
 // timmer가 먼저 callback queue에 들어가지만 먼저 실행되는것은 아니다.
 // Promise는 micro-task queue에 들어가고, callback-queue보다 priority를 갖게 된다.
+
+// const lotteryPromise = new Promise(function (resolve, reject) {
+//   console.log('Lottery draw is happening');
+//   setTimeout(function () {
+//     if (Math.random() >= 0.5) {
+//       // fullfilled promise
+//       resolve('You WIN !'); // call resolve function
+//     } else {
+//       reject(new Error('You lost your money TT'));
+//     }
+//   }, 2000);
+// });
+
+// lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+
+// // Promisifying setTimeout
+// // Real async way to use Timer
+// // Nice way to use Timer
+// const wait = function (seconds) {
+//   return new Promise(function (resolve) {
+//     // no need reject parameter
+//     setTimeout(resolve, seconds * 1000);
+//   });
+// };
+
+// wait(2)
+//   .then(() => {
+//     console.log('I waited for 2 seconds');
+//     return wait(1);
+//   })
+//   .then(() => console.log('I waited 1 more second'));
+
+// Promise.resolve('abc').then(x => console.log(x));
+// Promise.reject(new Error('Problem!')).catch(x => console.error(x));
+
+// Promisifying the Geolocation API
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    // navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // );
+    navigator.geolocation.getCurrentPosition(resolve, reject);
+  });
+};
+
+getPosition().then(pos => console.log(pos));
+
+// const whereAmI = function (lat, lng) {
+//   fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
+//     .then(res => {
+//       if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+//       return res.json();
+//     })
+//     .then(data => {
+//       console.log(data);
+//       console.log(`You are in ${data.city}, ${data.country}`);
+
+//       return fetch(`https://restcountries.com/v2/name/${data.country}`);
+//     })
+//     .then(res => {
+//       if (!res.ok) throw new Error(`Country not found (${res.status})`);
+
+//       return res.json();
+//     })
+//     .then(data => renderCountry(data[0]))
+//     .catch(err => console.error(`${err.message}`));
+// };
+
+const whereAmI = function () {
+  getPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+
+      return fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Problem with geocoding ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      console.log(data);
+      console.log(`You are in ${data.city}, ${data.country}`);
+
+      return fetch(`https://restcountries.com/v2/name/${data.country}`);
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Country not found (${res.status})`);
+
+      return res.json();
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => console.error(`${err.message}`));
+};
+
+btn.addEventListener('click', whereAmI);
