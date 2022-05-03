@@ -265,7 +265,7 @@ const getPosition = function () {
   });
 };
 
-getPosition().then(pos => console.log(pos));
+// getPosition().then(pos => console.log(pos));
 
 // const whereAmI = function (lat, lng) {
 //   fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`)
@@ -313,5 +313,29 @@ const whereAmI = function () {
     .then(data => renderCountry(data[0]))
     .catch(err => console.error(`${err.message}`));
 };
-
 btn.addEventListener('click', whereAmI);
+
+// Async & Await
+// Even better & easier way to consume promises.
+const whereAmIAsync = async function () {
+  // Geolocation
+  const pos = await getPosition();
+  const { latitude: lat, longitude: lng } = pos.coords;
+
+  // Reverse geocoding
+  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+  const dataGeo = await resGeo.json();
+  console.log(dataGeo);
+
+  // Country data
+  // fetch(`https://restcountries.com/v2/name/${country}`).then(res => console.log(res));
+
+  // same as above.
+  const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.state}`);
+
+  const data = await res.json();
+  console.log(data);
+  renderCountry(data[2]);
+};
+whereAmIAsync(); // async function => go background
+console.log('FIRST');
