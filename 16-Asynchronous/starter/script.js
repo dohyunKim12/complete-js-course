@@ -9,7 +9,7 @@ const countriesContainer = document.querySelector('.countries');
 //////////////////////////////////////////////////
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
-  // countriesContainer.style.opacity = 1;
+  countriesContainer.style.opacity = 1;
 };
 
 const renderCountry = function (data, className = '') {
@@ -318,24 +318,43 @@ btn.addEventListener('click', whereAmI);
 // Async & Await
 // Even better & easier way to consume promises.
 const whereAmIAsync = async function () {
-  // Geolocation
-  const pos = await getPosition();
-  const { latitude: lat, longitude: lng } = pos.coords;
+  try {
+    // Geolocation
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
 
-  // Reverse geocoding
-  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-  const dataGeo = await resGeo.json();
-  console.log(dataGeo);
+    // Reverse geocoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    if (!resGeo.ok) throw new Error('Problem with getting location data');
 
-  // Country data
-  // fetch(`https://restcountries.com/v2/name/${country}`).then(res => console.log(res));
+    const dataGeo = await resGeo.json();
+    console.log(dataGeo);
 
-  // same as above.
-  const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.state}`);
+    // Country data
+    // fetch(`https://restcountries.com/v2/name/${country}`).then(res => console.log(res));
 
-  const data = await res.json();
-  console.log(data);
-  renderCountry(data[2]);
+    // same as above.
+    const res = await fetch(
+      `https://restcountries.com/v2/name/${dataGeo.state}`
+    );
+    if (!resGeo.ok) throw new Error('Problem with getting Country');
+
+    const data = await res.json();
+    console.log(data);
+    renderCountry(data[2]);
+  } catch (err) {
+    console.error(err);
+    renderError(`Something went wrong!!! ${err.message}`);
+  }
 };
 whereAmIAsync(); // async function => go background
 console.log('FIRST');
+
+// try {
+//   let y = 1;
+//   const x = 2;
+//   x = 3;
+// } catch (err) {
+//   alert(err.message);
+//   console.log(err);
+// }
