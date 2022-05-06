@@ -93,7 +93,7 @@ const getCountryAndNeighbour = function (country) {
 // request.open('GET', `https://restcountries.com/v2/name/${country}`); // github public apis
 // request.send();
 
-const request = fetch('https://restcountries.com/v2/name/portugal');
+// const request = fetch('https://restcountries.com/v2/name/portugal');
 // console.log(request); // fetch는 promise 를 리턴함.
 // promise 는 로또 티켓같은거라고 생각하면 됨. (event handler의 callback 지옥으로부터 벗어나게 해준다.)
 // nested callback 대신 promise를 chaining 할 수 있음.
@@ -316,6 +316,8 @@ const whereAmI = function () {
 btn.addEventListener('click', whereAmI);
 
 // Async & Await
+// Await은 Async 함수 내부에서만 사용할 수 있다.
+// Await 사용하면 .then메소드처럼 promise를 받아올 때 까지 기다려줌. (순차적 진행이 가능.)
 // Even better & easier way to consume promises.
 const whereAmIAsync = async function () {
   try {
@@ -352,7 +354,7 @@ const whereAmIAsync = async function () {
   }
 };
 
-console.log('1: Will get location');
+// console.log('1: Will get location');
 // const city = whereAmIAsync(); // async function => always return promise
 // console.log(city);
 
@@ -361,12 +363,36 @@ console.log('1: Will get location');
 //   .catch(err => console.error(`2: ${err.message}`))
 //   .finally(() => console.log('3: Finished getting location'));
 
-(async function () {
+// (async function () {
+//   try {
+//     const city = await whereAmIAsync();
+//     console.log(`2: ${city}`);
+//   } catch (err) {
+//     console.error(`2: ${err.message}`);
+//   }
+//   console.log('3: Finished getting location');
+// })();
+
+// Running Promises in Parallel
+const get3Countries = async function (c1, c2, c3) {
   try {
-    const city = await whereAmIAsync();
-    console.log(`2: ${city}`);
+    // const [data1] = await getJSON(`https://restcountries.com/v2/name/${c1}`);
+    // const [data2] = await getJSON(`https://restcountries.com/v2/name/${c2}`);
+    // const [data3] = await getJSON(`https://restcountries.com/v2/name/${c3}`);
+
+    // console.log([data1.capital, data2.capital, data3.capital]);
+
+    // Promise.all 로 Parallel 하게 돌리기.!!!!! (필수)
+    const data = await Promise.all([
+      // Promise.all은 배열을 받고 배열을 리턴.
+      getJSON(`https://restcountries.com/v2/name/${c1}`),
+      getJSON(`https://restcountries.com/v2/name/${c2}`),
+      getJSON(`https://restcountries.com/v2/name/${c3}`),
+    ]);
+    console.log(data.map(d => d[0].capital));
   } catch (err) {
-    console.error(`2: ${err.message}`);
+    console.error(err);
   }
-  console.log('3: Finished getting location');
-})();
+};
+
+get3Countries('portugal', 'canada', 'tanzania');
