@@ -58,21 +58,50 @@ const wait = function (seconds) {
 
 let currentImage;
 
-createImage('./img/img-1.jpg')
-  .then(img => {
-    currentImage = img;
-    return wait(2);
-  })
-  .then(() => {
-    currentImage.style.display = 'none';
-    return createImage('./img/img-2.jpg');
-  })
-  .then(img => {
-    currentImage = img;
-    return wait(2);
-  })
-  .then(() => {
-    currentImage.style.display = 'none';
-  })
-  .catch(err => console.error(err));
+// createImage('./img/img-1.jpg')
+//   .then(img => {
+//     currentImage = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//     return createImage('./img/img-2.jpg');
+//   })
+//   .then(img => {
+//     currentImage = img;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currentImage.style.display = 'none';
+//   })
+//   .catch(err => console.error(err));
+
 // console.log(createImage());
+
+////////////////////////////////////////////
+// CC 3
+// Part 1
+const loadNPause = async function () {
+  try {
+    let img = await createImage('./img/img-1.jpg');
+    currentImage = img;
+    await wait(2);
+    currentImage.style.display = 'none';
+    img = await createImage('./img/img-2.jpg');
+    currentImage = img;
+    await wait(2);
+    currentImage.style.display = 'none';
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+// Compare with version above, I prefer async & await version. (More simple and Looks good, Intuitive)
+
+const loadAll = async function (imgArr) {
+  // const imgs = await Promise.all(imgArr.map(img => createImage(img)));
+  const imgs = await Promise.race(imgArr.map(img => createImage(img)));
+  console.log(imgs);
+};
+
+loadAll(['./img/img-1.jpg', './img/img-2.jpg', './img/img-3.jpg']);

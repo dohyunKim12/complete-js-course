@@ -395,4 +395,61 @@ const get3Countries = async function (c1, c2, c3) {
   }
 };
 
-get3Countries('portugal', 'canada', 'tanzania');
+// get3Countries('portugal', 'canada', 'tanzania');
+
+// Other Promise Combinators: race, allSettled, and any
+// 1. Promise.race
+// recieve array promise, return array promise.
+// settles의 input promise로 셋팅됨. (settle은 value가 available 해 진 상태라는 뜻. rejected인지 fullfilled 인지는 상관없음.)
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v2/name/italy`),
+    getJSON(`https://restcountries.com/v2/name/egypt`),
+    getJSON(`https://restcountries.com/v2/name/mexico`),
+    // getJSON(`https://restcountries.com/v2/name/blahblah`), // 이렇게 오류가 있던 없던 그냥 제일 빠른애 내보냄.
+    // 이 세가지가 race (경주) 하게됨.
+  ]);
+
+  console.log(res[0]); // 제일 빨리 응답한 애(이긴애, won) 출력.
+})();
+
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error('Request took too long!!'));
+    }, sec * 1000);
+  });
+};
+
+Promise.race([
+  getJSON(`https://restcountries.com/v2/name/tanzania`),
+  timeout(5), // 5초 지나도 응답 없으면 timeout으로 처리하고 error 발생시킴.
+  // 간단히 생각해서 5초 타이머랑 getJSON메소드랑 경주 시킨것임.
+])
+  .then(res => console.log(res[0]))
+  .catch(err => console.error(err));
+
+// Promise.allSettled
+Promise.allSettled([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+]).then(res => console.log(res));
+
+Promise.all([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.log(err));
+
+// Promise.any[ES2021]; first fullfilled promise를 retrun, rejected Promise는 무시.
+// Promise.race 와 매우 비슷하나, any는 rejected Promise를 무시해버림.
+Promise.any([
+  Promise.resolve('Success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('Another success'),
+])
+  .then(res => console.log(res))
+  .catch(err => console.log(err));
