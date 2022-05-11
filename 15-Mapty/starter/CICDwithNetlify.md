@@ -14,3 +14,5 @@ Netlify에서 repo 연동하고
 - build command: `package.json`에 명시된 build command 그대로 입력(parcel build index.html --dist-dir ./dist) (build command 입력하면 CI/CD 환경에서 package.json 파일을 보고 의존성 패키지들을 알아서 설치.)
 
 - publish directory: ./15-Mapty/starter/dist
+
+# Package.json 파일 만들기 -> npm init

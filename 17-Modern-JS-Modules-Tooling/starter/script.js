@@ -40,19 +40,88 @@
 
 // console.log('Something');
 
-const getLastPost = async function () {
-  const res = await fetch('https://jsonplaceholder.typicode.com/posts');
-  const data = await res.json();
-  console.log(data);
+// const getLastPost = async function () {
+//   const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+//   const data = await res.json();
+//   console.log(data);
 
-  return { title: data.at(-1).title, text: data.at(-1).body };
+//   return { title: data.at(-1).title, text: data.at(-1).body };
+// };
+
+// const lastPost = getLastPost();
+// console.log(lastPost);
+
+// // NOt very clean
+// // lastPost.then(last => console.log(last));
+
+// const lastPost2 = await getLastPost();
+// console.log();
+
+////////////////////////////////////////////////////////
+// // Module pattern
+// const ShoppingCart2 = (function () {
+//   const cart = [];
+//   const shippingCost = 10;
+//   const totalPrice = 237;
+//   const totalQuantity = 23;
+
+//   const addToCart = function (product, quantity) {
+//     cart.push({ product, quantity });
+//     console.log(
+//       `${quantity} ${product} added to cart (shipping cost is ${shippingCost})`
+//     );
+//   };
+
+//   const orderStock = function (product, quantity) {
+//     cart.push({ product, quantity });
+//     console.log(`${quantity} ${product} ordered from supplier`);
+//   };
+
+//   return {
+//     addToCart,
+//     cart,
+//     totalPrice,
+//     totalQuantity,
+//   };
+// })();
+// // IIFE(Immediately Invoked Function Expression) 을 통해 최초 1회 실행시키고,
+// // module의 export 를 return으로 대신함.
+// // import 하여 사용할 변수, 함수들을 return시키고 ShoppingCart2라는 변수에 할당시킴.
+// // 이 모든것이 closure(클로저)를 통해 가능하게 됨.
+
+// ShoppingCart2.addToCart('apple', 4);
+// ShoppingCart2.addToCart('pizza', 2);
+
+// console.log(ShoppingCart2);
+// console.log(ShoppingCart2.shippingCost);
+
+////////////////////////////////////////////////////////
+// // CommonJS Modules ( Browser에서 동작 안하더라도 Node js 에서 동작함.)
+// Export
+// export.addToCart = function (product, quantity) {
+//   cart.push({ product, quantity });
+//   console.log(
+//     `${quantity} ${product} added to cart (shipping cost is ${shippingCost})`
+//   );
+// };
+
+// // Import
+// const {addToCart} = require('./shoppingCart.js')
+
+import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+
+const state = {
+  cart: [
+    { product: 'bread', quantity: 5 },
+    { product: 'pizza', quantity: 5 },
+  ],
+  user: { loggedIn: true },
 };
 
-const lastPost = getLastPost();
-console.log(lastPost);
+const stateClone = Object.assign({}, state);
+// state.user.loggedIn = false;
+console.log(stateClone);
 
-// NOt very clean
-// lastPost.then(last => console.log(last));
-
-const lastPost2 = await getLastPost();
-console.log();
+const stateDeepClone = cloneDeep(state); // Good solution to Deep Clone
+state.user.loggedIn = false;
+console.log(stateDeepClone);
