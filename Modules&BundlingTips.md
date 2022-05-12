@@ -4,7 +4,11 @@
 2.  npm i parcel
 3.  npm run build
 
+<<<<<<< Updated upstream
 - 한가지 방법 더. `npx parcel index.html`
+=======
+- 방법 한가지 더. `npx parcel index.html`
+>>>>>>> Stashed changes
 
 # In Netlify
 

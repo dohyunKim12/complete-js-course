@@ -108,7 +108,9 @@
 // // Import
 // const {addToCart} = require('./shoppingCart.js')
 
-import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+// import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+import cloneDeep from 'lodash-es';
+// import cloneDeep from 'lodash-es';
 
 const state = {
   cart: [
@@ -125,3 +127,10 @@ console.log(stateClone);
 const stateDeepClone = cloneDeep(state); // Good solution to Deep Clone
 state.user.loggedIn = false;
 console.log(stateDeepClone);
+
+if (module.hot) {
+  // module.hot은 parcel에서만 사용.
+  // hot module reloading이 뜻하는 것은, 우리가 모듈 중 하나를 변경했을 때, rebuild를 trigger 함.
+  // 그리고 페이지를 새로고침하지 않고 바로 페이지에 반영됨.
+  module.hot.accept();
+}
