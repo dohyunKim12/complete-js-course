@@ -1,13 +1,12 @@
 {
-  "name": "forkify",
+  "name": "starter",
   "version": "1.0.0",
-  "description": "Recipe application",
-  "main": "index.js",
+  "description": "",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html --dist-dir ./dist"
   },
-  "author": "Dohyun Kim",
+  "author": "",
   "license": "ISC",
   "devDependencies": {
     "@parcel/transformer-sass": "^2.5.0",
@@ -15,7 +14,6 @@
   },
   "dependencies": {
     "core-js": "^3.22.5",
-    "fractional": "^1.0.0",
     "regenerator-runtime": "^0.13.9"
   }
 }

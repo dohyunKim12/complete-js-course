@@ -2,13 +2,14 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
+import paginationView from './views/paginationView.js';
+
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { loadRecipe } from './model';
 
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 
 const controlRecipes = async function () {
   try {
@@ -27,6 +28,21 @@ const controlRecipes = async function () {
   }
 };
 
+const goNextPg = function () {
+  changePg(true);
+};
+const goPrevPg = function () {
+  changePg(false);
+};
+const changePg = function (isNext = false) {
+  isNext ? model.state.search.page++ : model.state.search.page--;
+  resultsView.render(model.getSearchResultsPage(model.state.search.page));
+  paginationView.render(model.state.search);
+  paginationView._btnNext = document.querySelector('.pagination__btn--next');
+  paginationView._btnPrev = document.querySelector('.pagination__btn--prev');
+  paginationView.addHandlerPagination(goNextPg, goPrevPg);
+};
+
 const controlSearchResults = async function () {
   try {
     resultsView.renderSpinner();
@@ -39,8 +55,15 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
 
     // 3. render results
-    console.log(model.state.search.results);
-    resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage());
+
+    // 4. Render initial pagination buttons
+    paginationView.render(model.state.search);
+    paginationView._btnNext = document.querySelector('.pagination__btn--next');
+    paginationView._btnPrev = document.querySelector('.pagination__btn--prev');
+
+    // 5. Add handler pagination
+    paginationView.addHandlerPagination(goNextPg, goPrevPg);
   } catch (err) {
     console.log(err);
   }

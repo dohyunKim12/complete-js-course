@@ -1,15 +1,16 @@
 // import icons from '../img/icons.svg';  // Parcel 1
-import icons from 'url:../../img/icons.svg'; // Parcel 2
-import { Fraction } from 'fractional';
-import View from './View.js';
+import icons from "url:../../img/icons.svg"; // Parcel 2
+import View from "./View.js";
 
 class RecipeView extends View {
-  _parentElement = document.querySelector('.recipe');
-  _errorMessage = 'We could not find that recipe. Please try antoher one.';
-  _message = '';
+  _parentElement = document.querySelector(".recipe");
+  _errorMessage = "We could not find that recipe. Please try antoher one.";
+  _message = "";
 
   addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+    ["hashchange", "load"].forEach((ev) =>
+      window.addEventListener(ev, handler)
+    );
   }
 
   _generateMarkup() {
@@ -68,7 +69,7 @@ class RecipeView extends View {
       <div class="recipe__ingredients">
         <h2 class="heading--2">recipe ingredients</h2>
         <ul class="recipe__ingredient-list">
-          ${this._data.ingredients.map(this._generateMarkupIngredient).join('')}
+          ${this._data.ingredients.map(this._generateMarkupIngredient).join("")}
        </ul>
       </div>
 
@@ -101,9 +102,7 @@ class RecipeView extends View {
             <svg class="recipe__icon">
               <use href="${icons}#icon-check"></use>
             </svg>
-            <div class="recipe__quantity">${
-              ing.quantity ? new Fraction(ing.quantity).toString() : ''
-            }</div>
+            <div class="recipe__quantity">${ing.quantity}</div>
             <div class="recipe__description">
               <span class="recipe__unit">${ing.unit}</span>
               ${ing.description}

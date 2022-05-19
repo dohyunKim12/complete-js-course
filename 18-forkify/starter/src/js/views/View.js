@@ -1,4 +1,4 @@
-import icons from 'url:../../img/icons.svg';
+import icons from "url:../../img/icons.svg";
 
 export default class View {
   // Not gonna create any instance
@@ -11,11 +11,11 @@ export default class View {
     this._data = data;
     const markup = this._generateMarkup();
     this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    this._parentElement.insertAdjacentHTML("afterbegin", markup);
   }
 
   _clear() {
-    this._parentElement.innerHTML = '';
+    this._parentElement.innerHTML = "";
   }
 
   renderSpinner() {
@@ -27,7 +27,7 @@ export default class View {
     </div>
     `;
     this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    this._parentElement.insertAdjacentHTML("afterbegin", markup);
   }
 
   renderError(message = this._errorMessage) {
@@ -42,7 +42,7 @@ export default class View {
           </div>
     `;
     this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    this._parentElement.insertAdjacentHTML("afterbegin", markup);
   }
 
   renderMessage(message = this._message) {
@@ -57,6 +57,6 @@ export default class View {
           </div>
     `;
     this._clear();
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    this._parentElement.insertAdjacentHTML("afterbegin", markup);
   }
 }
