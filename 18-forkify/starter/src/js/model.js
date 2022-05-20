@@ -1,11 +1,11 @@
-import { API_URL } from "./config.js";
-import { RES_PER_PAGE } from "./config.js";
-import { getJSON } from "./helpers.js";
+import { API_URL } from './config.js';
+import { RES_PER_PAGE } from './config.js';
+import { getJSON } from './helpers.js';
 
 export const state = {
   recipe: {},
   search: {
-    query: "",
+    query: '',
     results: [],
     page: 1,
     resultsPerPage: RES_PER_PAGE,
@@ -61,4 +61,13 @@ export const getSearchResultsPage = function (page = state.search.page) {
   const end = page * state.search.resultsPerPage;
 
   return state.search.results.slice(start, end);
+};
+
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach((ing) => {
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
+    // newQt = oldQt * newServings / oldServings // 2 * 8 / 4 = 4
+  });
+
+  state.recipe.servings = newServings;
 };
