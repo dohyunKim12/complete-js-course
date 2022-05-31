@@ -26,87 +26,87 @@ const statements = flights.split('+');
 // }
 
 // Jonas Ver ... Pretty Better!
-const upper = str => str.slice(0, 3).toUpperCase();
+// const upper = str => str.slice(0, 3).toUpperCase();
 
-for (const flight of flights.split('+')) {
-  const [type, from, to, time] = flight.split(';'); // Please Use Destructuring !!!
-  const output = `${type.startsWith('_Delayed') ? '🎈' : ''}${type.replaceAll(
-    '_',
-    ' '
-  )} ${upper(from)} ${upper(to)} (${time.replace(':', 'h')})`.padStart(40); //default empty space
-  console.log(output);
-}
+// for (const flight of flights.split('+')) {
+//   const [type, from, to, time] = flight.split(';'); // Please Use Destructuring !!!
+//   const output = `${type.startsWith('_Delayed') ? '🎈' : ''}${type.replaceAll(
+//     '_',
+//     ' '
+//   )} ${upper(from)} ${upper(to)} (${time.replace(':', 'h')})`.padStart(40); //default empty space
+//   console.log(output);
+// }
 
-// Data needed for first part of the section
-const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-const openingHours = {
-  [weekdays[3]]: {
-    open: 12,
-    close: 22,
-  },
-  fri: {
-    open: 11,
-    close: 23,
-  },
-  sat: {
-    open: 0, // Open 24 hours
-    close: 24,
-  },
-  [`day-${2 + 4}`]: {
-    open: 2,
-    close: 4,
-  },
-};
+// // Data needed for first part of the section
+// const weekdays = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+// const openingHours = {
+//   [weekdays[3]]: {
+//     open: 12,
+//     close: 22,
+//   },
+//   fri: {
+//     open: 11,
+//     close: 23,
+//   },
+//   sat: {
+//     open: 0, // Open 24 hours
+//     close: 24,
+//   },
+//   [`day-${2 + 4}`]: {
+//     open: 2,
+//     close: 4,
+//   },
+// };
 
-const restaurant = {
-  name: 'Classico Italiano',
-  location: 'Via Angelo Tavanti 23, Firenze, Italy',
-  categories: ['Italian', 'Pizzeria', 'Vegetarian', 'Organic'],
-  starterMenu: ['Focaccia', 'Bruschetta', 'Garlic Bread', 'Caprese Salad'],
-  mainMenu: ['Pizza', 'Pasta', 'Risotto'],
+// const restaurant = {
+//   name: 'Classico Italiano',
+//   location: 'Via Angelo Tavanti 23, Firenze, Italy',
+//   categories: ['Italian', 'Pizzeria', 'Vegetarian', 'Organic'],
+//   starterMenu: ['Focaccia', 'Bruschetta', 'Garlic Bread', 'Caprese Salad'],
+//   mainMenu: ['Pizza', 'Pasta', 'Risotto'],
 
-  // openingHours: openingHours,
-  // ES6 Enhanced object literals
-  openingHours,
+//   // openingHours: openingHours,
+//   // ES6 Enhanced object literals
+//   openingHours,
 
-  // order: function (starterIndex, mainIndex) {
-  //   return [this.starterMenu[starterIndex], this.mainMenu[mainIndex]];
-  // },
-  // ES6
-  order(starterIndex, mainIndex) {
-    return [this.starterMenu[starterIndex], this.mainMenu[mainIndex]];
-  },
+//   // order: function (starterIndex, mainIndex) {
+//   //   return [this.starterMenu[starterIndex], this.mainMenu[mainIndex]];
+//   // },
+//   // ES6
+//   order(starterIndex, mainIndex) {
+//     return [this.starterMenu[starterIndex], this.mainMenu[mainIndex]];
+//   },
 
-  orderDelivery({
-    starterIndex = 1, // default values
-    mainIndex = 1,
-    time = '19:00',
-    address = 'funky town',
-  }) {
-    console.log(
-      'Order received!',
-      this.starterMenu[starterIndex],
-      this.mainMenu[mainIndex],
-      time,
-      address
-    );
-  },
+//   orderDelivery({
+//     starterIndex = 1, // default values
+//     mainIndex = 1,
+//     time = '19:00',
+//     address = 'funky town',
+//   }) {
+//     console.log(
+//       'Order received!',
+//       this.starterMenu[starterIndex],
+//       this.mainMenu[mainIndex],
+//       time,
+//       address
+//     );
+//   },
 
-  orderPasta(ing1, ing2, ing3) {
-    console.log(
-      `Here is Your Delicious Pasta with ${ing1}, ${ing2}, and ${ing3}`
-    );
-  },
+//   orderPasta(ing1, ing2, ing3) {
+//     console.log(
+//       `Here is Your Delicious Pasta with ${ing1}, ${ing2}, and ${ing3}`
+//     );
+//   },
 
-  orderPizza(mainIngredient, ...otherIngredients) {
-    let str = `Here is Your Delicious Pizza with ${mainIngredient}`;
-    for (let i = 0; i < otherIngredients.length; i++) {
-      str += `, ${otherIngredients[i]}`;
-    }
-    str += '!';
-    console.log(str);
-  },
-};
+//   orderPizza(mainIngredient, ...otherIngredients) {
+//     let str = `Here is Your Delicious Pizza with ${mainIngredient}`;
+//     for (let i = 0; i < otherIngredients.length; i++) {
+//       str += `, ${otherIngredients[i]}`;
+//     }
+//     str += '!';
+//     console.log(str);
+//   },
+// };
 
 // // ////////////////////////////////////
 // // Working with Strings
@@ -397,8 +397,8 @@ const restaurant = {
 // }
 
 // // ////////////////////////////////////
-// // Enhanced Object Literals
-// // Optional Chaning
+// Enhanced Object Literals
+// Optional Chaning
 // if (restaurant.openingHours.fri) console.log(restaurant.openingHours.fri.open);
 // if (restaurant.openingHours && restaurant.openingHours.mon)
 // console.log(restaurant.openingHours.mon.open);
@@ -600,30 +600,52 @@ const restaurant = {
 
 ////////////////////////////////////
 // Destructuring Objects
-// const deliveryObj = {
-//   time: '22:30',
-//   address: 'Via del Sole, 21',
-//   mainIndex: 2,
-//   starterIndex: 2,
-// };
+const restaurant = {
+  starterMenu: ['salad', 'bread', 'soup'],
+  mainMenu: ['pizza', 'pasta', 'goguma'],
+  name: `Bonny's Pasta`,
+  openingHours: '9am to 8pm',
+  categories: ['blah', 'blahblah'],
+  orderDelivery({
+    starterIndex = 1, // default values
+    mainIndex = 1,
+    time = '19:00',
+    address = 'funky town',
+  }) {
+    console.log(
+      'Order received!',
+      this.starterMenu[starterIndex],
+      this.mainMenu[mainIndex],
+      time,
+      address
+    );
+  },
+};
 
-// restaurant.orderDelivery(deliveryObj);
+const deliveryObj = {
+  time: '22:30',
+  address: 'Via del Sole, 21',
+  mainIndex: 2,
+  starterIndex: 2,
+};
+
+restaurant.orderDelivery(deliveryObj);
 // Object 하나만 보낸다. 그러면 fucntion에서 자체적으로 destructuring.
-// restaurant.orderDelivery({
-//   mainIndex: 0,
-// });
+restaurant.orderDelivery({
+  mainIndex: 0,
+});
 
-// const { name, openingHours, categories } = restaurant;
-// console.log(name, openingHours, categories);
+const { name, openingHours, categories } = restaurant;
+console.log(name, openingHours, categories);
 
-// // With new variable names
-// const {
-//   name: restaurantName,
-//   openingHours: hours,
-//   categories: tags,
-// } = restaurant;
+// With new variable names
+const {
+  name: restaurantName,
+  openingHours: hours,
+  categories: tags,
+} = restaurant;
 
-// console.log(restaurantName, hours, tags);
+console.log(restaurantName, hours, tags);
 
 // // setting default value
 // const { fucky: menu = [], starterMenu: starters = [] } = restaurant;
